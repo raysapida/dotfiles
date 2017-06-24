@@ -71,7 +71,7 @@ Plugin 'rking/ag.vim'
 " Continuously update session files
 Plugin 'tpope/vim-obsession'
 
-" Easy to use alignment 
+" Easy to use alignment
 " https://github.com/junegunn/vim-easy-align
 Plugin 'junegunn/vim-easy-align'
 
@@ -172,10 +172,6 @@ set autowrite     " Automatically :write before running commands
 set relativenumber
 " set background=light
 set background=dark
-set clipboard=unnamed
-if $TMUX == ''
-  set clipboard+=unnamed
-endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -216,6 +212,21 @@ set list listchars=tab:»·,trail:·,nbsp:·
 set diffopt+=vertical
 
 set tags=./tags;
+
+" Shortcut for creating a new tab
+nnoremap <silent> <S-t> :tabnew %<CR>
+
+if $TMUX == ''
+  set clipboard+=unnamed
+endif
+
+" OSX specific
+if has("unix")
+  let s:uname = system("uname")
+  if s:uname == "Darwin\n"
+    set clipboard=unnamed
+  endif
+endif
 
 " Limelight specific configurations
 let g:limelight_conceal_ctermfg = 'gray'
