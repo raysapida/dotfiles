@@ -320,6 +320,11 @@ endif
 
 " Set a graphical menu for tab completed commands
 set wildmenu
+set wildmode=full
+
+" Spell completion
+set spell
+set complete+=kspell
 
 map <silent> <Leader>rt :!bundle list --paths=true \| xargs ctags --extra=+f --exclude=.git --exclude=log -R *<CR><CR>
 
