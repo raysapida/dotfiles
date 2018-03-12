@@ -32,8 +32,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-vinegar'
 
 " Code completion using tab key
-" Plugin 'Shougo/neocomplete.vim'
-Plugin 'Valloric/YouCompleteMe'
+Plugin 'Shougo/deoplete.nvim'
 
 " Allows vim to make dir when creating a new file
 Plugin 'pbrisbin/vim-mkdir'
@@ -70,6 +69,9 @@ Plugin 'rking/ag.vim'
 
 " Continuously update session files
 Plugin 'tpope/vim-obsession'
+
+" Add additional targets for motions
+Plugin 'wellle/targets.vim'
 
 " Easy to use alignment
 " https://github.com/junegunn/vim-easy-align
@@ -119,6 +121,7 @@ Plugin 'moll/vim-node'
 Plugin 'mxw/vim-jsx'
 Plugin 'justinj/vim-react-snippets'
 Plugin 'nikvdp/ejs-syntax'
+Plugin 'prettier/vim-prettier'
 
 " CSS specific Plugins
 Plugin 'ap/vim-css-color'
@@ -547,3 +550,6 @@ let g:ycm_key_list_previous_completion=[]
 
 " Uses the prettier js library to format js and jsx files
 autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
+
+" Use deoplete.
+let g:deoplete#enable_at_startup = 1
