@@ -1,3 +1,4 @@
+# skip_global_compinit=1
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/raysapida/.oh-my-zsh
 
@@ -56,7 +57,8 @@ ZSH_THEME="miloshadzic"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git npm docker rails brew )
+# plugins=(git npm docker rails brew)
+plugins=(git rails)
 
 # User configuration
 
@@ -143,11 +145,15 @@ alias ccat='pygmentize -O bg=dark,style=colorful'
 setopt inc_append_history
 setopt share_history
 
-antigen bundle zsh-users/zsh-syntax-highlighting
+# antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle robbyrussell/oh-my-zsh
 antigen bundle lukechilds/zsh-nvm
 
 antigen apply
 
-eval "$(thefuck --alias)"
 export PATH="/usr/local/opt/curl/bin:$PATH"
+
+export VIRTUALENV_PYTHON=/usr/local/bin/python3
+export VIRTUALENVWRAPPER_PYTHON=$VIRTUALENV_PYTHON
+
+export PATH="$HOME/.yarn/bin:$PATH"
