@@ -102,6 +102,9 @@ Plugin 'morhetz/gruvbox'
 
 Plugin 'yuttie/comfortable-motion.vim'
 
+" Ctags plugin to show all tags in a file
+Plugin 'majutsushi/tagbar'
+
 " ========================================================================================
 " Language specific plugins
 
@@ -213,8 +216,6 @@ set list listchars=tab:»·,trail:·,nbsp:·
 
 " Always use vertical diffs
 set diffopt+=vertical
-
-set tags=./tags;
 
 " Shortcut for creating a new tab
 nnoremap <silent> <S-t> :tabnew %<CR>
@@ -469,3 +470,7 @@ autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
 " Use deoplete.
 let g:deoplete#enable_at_startup = 1
+
+" search first in current directory then file directory for tag file
+set tags=tags,./tags
+nmap <F8> :TagbarToggle<CR>
