@@ -157,3 +157,6 @@ export VIRTUALENV_PYTHON=/usr/local/bin/python3
 export VIRTUALENVWRAPPER_PYTHON=$VIRTUALENV_PYTHON
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+
+alias rtag='ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=tmp . $(bundle list --paths)'
