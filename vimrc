@@ -2,159 +2,156 @@ set nocompatible
 filetype off
 let &t_Co=256
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+call plug#begin('~/.vim/plugged')
 
-" Plugin Manager
-Plugin 'gmarik/Vundle.vim'
-" Used for Vundle and offers utility functions
-Plugin 'L9'
 
 " ========================================================================================
 " General VIM plugins
 
 " Start screen plugins showing recent buffers
-Plugin 'mhinz/vim-startify'
+Plug 'mhinz/vim-startify'
 
 " Wrapper for UNIX command
-Plugin 'tpope/vim-eunuch'
+Plug 'tpope/vim-eunuch'
 
 " Wrapper to allow git commands in vim
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 
 " Using . command with Plugins
-Plugin 'tpope/vim-repeat'
+Plug 'tpope/vim-repeat'
 
 " Mappings to easily delete, change and add such surroundings in pairs.
-Plugin 'tpope/vim-surround'
+Plug 'tpope/vim-surround'
 
 " netrw enhancement
-Plugin 'tpope/vim-vinegar'
+Plug 'tpope/vim-vinegar'
 
 " Code completion using tab key
-Plugin 'Shougo/deoplete.nvim'
+Plug 'Shougo/deoplete.nvim'
 
 " Allows vim to make dir when creating a new file
-Plugin 'pbrisbin/vim-mkdir'
+Plug 'pbrisbin/vim-mkdir'
 
 " Displays indent levels
-Plugin 'nathanaelkane/vim-indent-guides'
+Plug 'nathanaelkane/vim-indent-guides'
 
 " Full path fuzzy file, buffer, mru, tag, ... finder
-Plugin 'ctrlpvim/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 
 " Navigation inside a file
-Plugin 'easymotion/vim-easymotion'
+Plug 'easymotion/vim-easymotion'
 
 " Allow multiple cursors using ctrl n, ctrl p , ctrl x
-Plugin 'terryma/vim-multiple-cursors'
+Plug 'terryma/vim-multiple-cursors'
 
 " Creates a closing pairing for parentheses, brackets, etc
-Plugin 'Townk/vim-autoclose'
+Plug 'Townk/vim-autoclose'
 
 " linter
-Plugin 'scrooloose/syntastic'
+Plug 'scrooloose/syntastic'
 
 " sort with gs
-Plugin 'christoomey/vim-sort-motion'
+Plug 'christoomey/vim-sort-motion'
 
 " Copy to system clipboard using cp
-Plugin 'christoomey/vim-system-copy'
+Plug 'christoomey/vim-system-copy'
 
 " Commenting using gcc
-Plugin 'tpope/vim-commentary'
+Plug 'tpope/vim-commentary'
 
 " Wrapper for the silver searcher
-Plugin 'rking/ag.vim'
+Plug 'rking/ag.vim'
 
 " Continuously update session files
-Plugin 'tpope/vim-obsession'
+Plug 'tpope/vim-obsession'
 
 " Add additional targets for motions
-Plugin 'wellle/targets.vim'
+Plug 'wellle/targets.vim'
 
 " Easy to use alignment
 " https://github.com/junegunn/vim-easy-align
-Plugin 'junegunn/vim-easy-align'
+Plug 'junegunn/vim-easy-align'
 
 " Plugin to view the values of the registers
-Plugin 'junegunn/vim-peekaboo'
+Plug 'junegunn/vim-peekaboo'
 
 " Vim/tmux integration
-Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'christoomey/vim-tmux-runner'
-Plugin 'keith/tmux.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'christoomey/vim-tmux-runner'
+Plug 'keith/tmux.vim'
 
 " Plugins to allow snippets
 " Plugin 'MarcWeber/vim-addon-mw-utils'
 " Plugin 'tomtom/tlib_vim'
 " Plugin 'garbas/vim-snipmate'
-Plugin 'honza/vim-snippets'
-Plugin 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'
 
 
 " Plugins for changing the themes
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'edkolev/tmuxline.vim'
-Plugin 'flazz/vim-colorschemes'
-Plugin 'morhetz/gruvbox'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'edkolev/tmuxline.vim'
+Plug 'flazz/vim-colorschemes'
+Plug 'morhetz/gruvbox'
 
-Plugin 'yuttie/comfortable-motion.vim'
+Plug 'yuttie/comfortable-motion.vim'
 
 " Ctags plugin to show all tags in a file
-Plugin 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'
 
 " ========================================================================================
 " Language specific plugins
 
 " Ruby / Rails specific plugins
-Plugin 'thoughtbot/vim-rspec'
-Plugin 'tpope/vim-rails'
-Plugin 'tpope/vim-bundler'
+Plug 'thoughtbot/vim-rspec'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-bundler'
 
 " Javascript related Plugins
-Plugin 'pangloss/vim-javascript'
+Plug 'pangloss/vim-javascript'
 " Plugin 'jelera/vim-javascript-syntax'
-Plugin 'othree/yajs.vim'
-Plugin 'isRuslan/vim-es6'
-Plugin 'mustache/vim-mustache-handlebars'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'moll/vim-node'
-Plugin 'mxw/vim-jsx'
-Plugin 'justinj/vim-react-snippets'
-Plugin 'nikvdp/ejs-syntax'
-Plugin 'prettier/vim-prettier'
+Plug 'othree/yajs.vim'
+Plug 'isRuslan/vim-es6'
+Plug 'mustache/vim-mustache-handlebars'
+Plug 'kchmck/vim-coffee-script'
+Plug 'moll/vim-node'
+Plug 'mxw/vim-jsx'
+Plug 'justinj/vim-react-snippets'
+Plug 'nikvdp/ejs-syntax'
+Plug 'prettier/vim-prettier'
+Plug 'tellijo/vim-react-native-snippets'
+Plug 'grvcoelho/vim-javascript-snippets'
 
 " CSS specific Plugins
-Plugin 'ap/vim-css-color'
+Plug 'ap/vim-css-color'
 
 " Docker specific Plugins
-Plugin 'ekalinin/Dockerfile.vim'
+Plug 'ekalinin/Dockerfile.vim'
 
 " Python specific plugins
-Plugin 'klen/python-mode'
+Plug 'klen/python-mode'
 
 " Templating specific plugins
-Plugin 'tpope/vim-haml'
-Plugin 'digitaltoad/vim-pug'
+Plug 'tpope/vim-haml'
+Plug 'digitaltoad/vim-pug'
 
 " Elixir specific plugins
-Plugin 'elixir-lang/vim-elixir'
+Plug 'elixir-lang/vim-elixir'
 
 " Solidity / Ethereum specific plugins
-Plugin 'tomlion/vim-solidity'
+Plug 'tomlion/vim-solidity'
 
 " C Specific Plugins
-Plugin 'justinmk/vim-syntax-extra'
+Plug 'justinmk/vim-syntax-extra'
 
 " Writing specific plugins
-Plugin 'reedes/vim-pencil'
-Plugin 'reedes/vim-lexical'
-Plugin 'junegunn/goyo.vim'
-Plugin 'junegunn/limelight.vim'
+Plug 'reedes/vim-pencil'
+Plug 'reedes/vim-lexical'
+Plug 'junegunn/goyo.vim'
+Plug 'junegunn/limelight.vim'
 
-call vundle#end()
+call plug#end()
 
 filetype plugin indent on
 
