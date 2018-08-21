@@ -4,14 +4,13 @@ export ZSH=/Users/raysapida/.oh-my-zsh
 
 source ~raysapida/antigen.zsh
 
-
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 # honukai
-ZSH_THEME="miloshadzic"
-# ZSH_THEME="muse"
+# ZSH_THEME="miloshadzic"
+ZSH_THEME="muse"
 # ZSH_THEME="agnoster"
 
 
@@ -146,7 +145,7 @@ setopt inc_append_history
 setopt share_history
 
 # antigen bundle zsh-users/zsh-syntax-highlighting
-antigen bundle robbyrussell/oh-my-zsh
+# antigen bundle robbyrussell/oh-my-zsh
 antigen bundle lukechilds/zsh-nvm
 
 antigen apply
@@ -160,3 +159,7 @@ export PATH="$HOME/.yarn/bin:$PATH"
 
 
 alias rtag='ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=tmp . $(bundle list --paths)'
+
+alias docker-stop-all='docker stop $(docker ps -a -q)'
+alias docker-rm-all='docker rm $(docker ps -a -q)'
+alias docker-start-all='docker start $(docker ps -a -q)'
