@@ -106,6 +106,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim'
 Plug 'flazz/vim-colorschemes'
 Plug 'morhetz/gruvbox'
+Plug 'jacoborus/tender.vim'
 
 Plug 'yuttie/comfortable-motion.vim'
 
@@ -121,19 +122,18 @@ Plug 'tpope/vim-rails'
 Plug 'tpope/vim-bundler'
 
 " Javascript related Plugins
-Plug 'pangloss/vim-javascript'
-" Plugin 'jelera/vim-javascript-syntax'
-Plug 'othree/yajs.vim'
-Plug 'isRuslan/vim-es6'
-Plug 'mustache/vim-mustache-handlebars'
-Plug 'kchmck/vim-coffee-script'
-Plug 'moll/vim-node'
-Plug 'mxw/vim-jsx'
-Plug 'justinj/vim-react-snippets'
-Plug 'nikvdp/ejs-syntax'
-Plug 'prettier/vim-prettier'
-Plug 'tellijo/vim-react-native-snippets'
-Plug 'grvcoelho/vim-javascript-snippets'
+Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
+Plug 'othree/yajs.vim', { 'for': 'javascript' }
+Plug 'isRuslan/vim-es6', { 'for': 'javascript' }
+Plug 'mustache/vim-mustache-handlebars', { 'for': 'javascript' }
+Plug 'kchmck/vim-coffee-script', { 'for': 'javascript' }
+Plug 'moll/vim-node', { 'for': 'javascript' }
+Plug 'mxw/vim-jsx', { 'for': 'javascript' }
+Plug 'justinj/vim-react-snippets', { 'for': 'javascript' }
+Plug 'nikvdp/ejs-syntax', { 'for': 'javascript' }
+Plug 'prettier/vim-prettier', { 'for': 'javascript' }
+Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
+Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
 
 " CSS specific Plugins
 Plug 'ap/vim-css-color'
@@ -197,7 +197,8 @@ endif
 " Color scheme
 " colorscheme Tomorrow-Night
 " colorscheme distinguished
-colorscheme gruvbox
+" colorscheme gruvbox
+colorscheme tender
 " highlight NonText guibg=#060606
 " highlight Folded  guibg=#0A0A0A guifg=#9090D0
 " let g:gruvbox_contrast_dark=medium
@@ -387,6 +388,7 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
+let g:airline_theme = 'tender'
 let g:airline_powerline_fonts = 1
 " let g:airline_left_sep = '»'
 " let g:airline_left_sep = '▶'
@@ -483,3 +485,7 @@ let g:deoplete#enable_at_startup = 1
 " search first in current directory then file directory for tag file
 set tags=tags,./tags
 nmap <F8> :TagbarToggle<CR>
+
+if (has("termguicolors"))
+ set termguicolors
+endif
