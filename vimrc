@@ -2,6 +2,12 @@ set nocompatible
 filetype off
 let &t_Co=256
 
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin('~/.vim/plugged')
 
 
@@ -27,7 +33,13 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 
 " Code completion using tab key
-Plug 'Shougo/deoplete.nvim'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 
 " Allows vim to make dir when creating a new file
 Plug 'pbrisbin/vim-mkdir'
