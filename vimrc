@@ -135,6 +135,10 @@ Plug 'prettier/vim-prettier', { 'for': 'javascript' }
 Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
 Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
 
+" Markdown specific plugins
+Plug 'godlygeek/tabular', { 'for': 'markdown' }
+Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+
 " CSS specific Plugins
 Plug 'ap/vim-css-color'
 
