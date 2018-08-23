@@ -57,7 +57,7 @@ ZSH_THEME="muse"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 # plugins=(git npm docker rails brew)
-plugins=(git rails)
+plugins=(git rails yarn)
 
 # User configuration
 
