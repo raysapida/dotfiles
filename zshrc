@@ -163,3 +163,5 @@ alias rtag='ctags -R --languages=ruby --exclude=.git --exclude=log --exclude=tmp
 alias docker-stop-all='docker stop $(docker ps -a -q)'
 alias docker-rm-all='docker rm $(docker ps -a -q)'
 alias docker-start-all='docker start $(docker ps -a -q)'
+
+alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10'

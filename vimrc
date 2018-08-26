@@ -201,8 +201,8 @@ endif
 " Color scheme
 " colorscheme Tomorrow-Night
 " colorscheme distinguished
-" colorscheme gruvbox
-colorscheme tender
+colorscheme gruvbox
+" colorscheme tender
 " highlight NonText guibg=#060606
 " highlight Folded  guibg=#0A0A0A guifg=#9090D0
 " let g:gruvbox_contrast_dark=medium
