@@ -114,9 +114,9 @@ Plug 'majutsushi/tagbar'
 " Language specific plugins
 
 " Ruby / Rails specific plugins
-Plug 'thoughtbot/vim-rspec'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-bundler'
+Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
+Plug 'tpope/vim-rails', { 'for': 'ruby' }
+Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 
 " Javascript related Plugins
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
@@ -143,7 +143,7 @@ Plug 'ap/vim-css-color'
 Plug 'ekalinin/Dockerfile.vim'
 
 " Python specific plugins
-Plug 'klen/python-mode'
+Plug 'klen/python-mode', { 'for': 'python' }
 
 " Templating specific plugins
 Plug 'tpope/vim-haml'
