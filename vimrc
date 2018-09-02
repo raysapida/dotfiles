@@ -59,9 +59,6 @@ Plug 'terryma/vim-multiple-cursors'
 " Creates a closing pairing for parentheses, brackets, etc
 Plug 'Townk/vim-autoclose'
 
-" linter
-Plug 'scrooloose/syntastic'
-
 " sort with gs
 Plug 'christoomey/vim-sort-motion'
 
@@ -324,18 +321,6 @@ if executable('ag')
   endif
 endif
 
-" Syntastic settings
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-
-" Syntastic settings
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 1
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-" let g:syntastic_javascript_checkers = ['eslint']
-
 " Set a graphical menu for tab completed commands
 set wildmenu
 set wildmode=full
@@ -432,9 +417,6 @@ let g:tmuxline_preset = {
       \'x'    : '%a %b %d',
       \'y'    : '%I:%M %p',
       \'z'    : '#(~/bin/battery Discharging) - #h'}
-
-" Disable syntastic check by default
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes':   [],'passive_filetypes': [] }
 
 " Relative / Absolute line numbers toggle
 function! NumberToggle()
