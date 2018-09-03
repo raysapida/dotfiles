@@ -101,6 +101,7 @@ Plug 'SirVer/ultisnips'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim'
+Plug 'reedes/vim-thematic'
 Plug 'flazz/vim-colorschemes'
 Plug 'morhetz/gruvbox'
 Plug 'jacoborus/tender.vim'
@@ -196,13 +197,29 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
 endif
 
 " Color scheme
-" colorscheme Tomorrow-Night
-" colorscheme distinguished
 colorscheme gruvbox
-" colorscheme tender
+let g:thematic#defaults = {
+\ 'airline-theme': 'tender',
+\ 'background': 'dark',
+\ 'laststatus': 2,
+\ 'theme': 'gruvbox',
+\ }
+
+let g:thematic#themes = {
+\ 'gruvbox'  : {
+\                },
+\ 'Tomorrow-Night'  : {
+\                },
+\ 'distinguished'  : {
+\                },
+\ 'tender'  : {
+\                  'typeface': 'Fira Mono Medium for Powerline Medium',
+\                  'font-size': 30,
+\                },
+\ }
+
 " highlight NonText guibg=#060606
 " highlight Folded  guibg=#0A0A0A guifg=#9090D0
-" let g:gruvbox_contrast_dark=medium
 
 " Make it obvious where 80 characters is
 set textwidth=90
