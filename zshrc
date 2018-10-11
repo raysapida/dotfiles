@@ -172,3 +172,5 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 # tabtab source for sls package
 # uninstall by removing these lines or running `tabtab uninstall sls`
 [[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh
+
+alias rn-x='react-native run-ios --simulator="iPhone X"'
