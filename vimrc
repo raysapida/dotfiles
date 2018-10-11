@@ -196,10 +196,9 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
   syntax on
 endif
 
-" Color scheme
-colorscheme gruvbox
+let g:thematic#theme_name = 'gruvbox'
 let g:thematic#defaults = {
-\ 'airline-theme': 'tender',
+\ 'airline-theme': 'serene',
 \ 'background': 'dark',
 \ 'laststatus': 2,
 \ 'theme': 'gruvbox',
@@ -209,6 +208,12 @@ let g:thematic#themes = {
 \ 'gruvbox'  : {
 \                },
 \ 'Tomorrow-Night'  : {
+\                },
+\ 'bubblegum'  : { 'typeface': 'Menlo',
+\                  'font-size': 18,
+\                     'background': 'light',
+\                  'transparency': 10,
+\                  'linespace': 2,
 \                },
 \ 'distinguished'  : {
 \                },
@@ -492,3 +497,6 @@ nmap <F8> :TagbarToggle<CR>
 if (has("termguicolors"))
  set termguicolors
 endif
+
+" Set Podfile and .podspec files as ruby
+autocmd BufNewFile,BufRead Podfile,*.podspec set filetype=ruby

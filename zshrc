@@ -165,3 +165,10 @@ alias docker-rm-all='docker rm $(docker ps -a -q)'
 alias docker-start-all='docker start $(docker ps -a -q)'
 
 alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10'
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh
