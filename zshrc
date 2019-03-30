@@ -174,3 +174,16 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 [[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh
 
 alias rn-x='react-native run-ios --simulator="iPhone X"'
+
+export PATH=$PATH:/Users/raysapida/platform-tools/bin
+
+alias lint='./node_modules/.bin/eslint --fix'
+
+alias b='buku --suggest'
+
+export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
+export ANDROID_HOME="/usr/local/share/android-sdk"
+
+alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
+
+alias usb-info='system_profiler SPUSBDataType'
