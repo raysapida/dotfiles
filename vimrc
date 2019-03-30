@@ -105,6 +105,7 @@ Plug 'reedes/vim-thematic'
 Plug 'flazz/vim-colorschemes'
 Plug 'morhetz/gruvbox'
 Plug 'jacoborus/tender.vim'
+Plug 'daylerees/colour-schemes'
 
 Plug 'yuttie/comfortable-motion.vim'
 
@@ -132,6 +133,9 @@ Plug 'nikvdp/ejs-syntax', { 'for': 'javascript' }
 Plug 'prettier/vim-prettier', { 'for': 'javascript' }
 Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
 Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
+Plug 'leafgarland/typescript-vim'
+
+Plug 'mattn/emmet-vim'
 
 " Markdown specific plugins
 Plug 'godlygeek/tabular', { 'for': 'markdown' }
@@ -164,6 +168,9 @@ Plug 'reedes/vim-pencil'
 Plug 'reedes/vim-lexical'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
+
+Plug 'w0rp/ale'
+Plug 'skywind3000/asyncrun.vim'
 
 call plug#end()
 
@@ -470,7 +477,7 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=lightgrey ctermbg=ligh
 " Vim pencil specifc plugins
 augroup pencil
   autocmd!
-  autocmd FileType markdown call pencil#init({'wrap': 'hard', 'autoformat': 1})
+  autocmd FileType markdown call pencil#init({'wrap': 'hard', 'autoformat': 0})
         \ | call lexical#init()
   autocmd FileType text     call pencil#init({'wrap': 'hard', 'autoformat': 0})
         \ | call lexical#init()
@@ -500,3 +507,25 @@ endif
 
 " Set Podfile and .podspec files as ruby
 autocmd BufNewFile,BufRead Podfile,*.podspec set filetype=ruby
+
+
+let g:user_emmet_leader_key='<C-Z>'
+let g:user_emmet_settings = {
+      \  'javascript.jsx' : {
+      \      'extends' : 'jsx',
+      \  },
+      \}
+
+
+let g:ale_sign_error = '●'
+let g:ale_sign_warning = '.'
+let g:ale_lint_on_enter = 0
+
+let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
+let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
+
+autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
+
+" Exit terminal mode
+tnoremap <Esc> <C-\><C-n>
+tnoremap jk <C-\><C-n>
