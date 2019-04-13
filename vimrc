@@ -312,7 +312,8 @@ map <Leader>a :call RunAllSpecs()<CR>
 
 " let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
 " let g:rspec_command = "VtrSendCommandToRunner! rspec {spec}"
-let g:rspec_command = "VtrSendCommandToRunner! be rspec {spec}"
+" let g:rspec_command = "VtrSendCommandToRunner! be rspec {spec}"
+let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
 
 " fix for extra indents when pasting from clipboard
 nnoremap <leader>q :r!pbpaste<cr>

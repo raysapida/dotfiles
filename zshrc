@@ -57,7 +57,7 @@ ZSH_THEME="muse"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 # plugins=(git npm docker rails brew)
-plugins=(git rails yarn)
+plugins=(git rails yarn docker)
 
 # User configuration
 
@@ -187,3 +187,4 @@ export ANDROID_HOME="/usr/local/share/android-sdk"
 alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
 
 alias usb-info='system_profiler SPUSBDataType'
+alias run-local='./scripts/run_local.sh'
