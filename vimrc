@@ -310,10 +310,13 @@ map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <Leader>a :call RunAllSpecs()<CR>
 
+" TODO: Dynamically use a specific rspec command or point to a script/alias that does
 " let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
 " let g:rspec_command = "VtrSendCommandToRunner! rspec {spec}"
 " let g:rspec_command = "VtrSendCommandToRunner! be rspec {spec}"
-let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
+" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
+" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_local_rspec.sh {spec}"
+let g:rspec_command = "VtrSendCommandToRunner! ./scripts/rspec.sh {spec}"
 
 " fix for extra indents when pasting from clipboard
 nnoremap <leader>q :r!pbpaste<cr>
