@@ -188,3 +188,9 @@ alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -
 
 alias usb-info='system_profiler SPUSBDataType'
 alias run-local='./scripts/run_local.sh'
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
