@@ -175,6 +175,8 @@ Plug 'junegunn/limelight.vim'
 Plug 'w0rp/ale'
 Plug 'skywind3000/asyncrun.vim'
 
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+
 call plug#end()
 
 filetype plugin indent on
@@ -568,3 +570,8 @@ let s:denite_options = {'default' : {
       \ 'highlight_matched_char': 'Function',
       \ 'highlight_matched_range': 'Normal'
       \ }}
+
+" === coc.nvim === "
+nmap <silent> <leader>dd <Plug>(coc-definition)
+nmap <silent> <leader>dr <Plug>(coc-references)
+nmap <silent> <leader>dj <Plug>(coc-implementation)
