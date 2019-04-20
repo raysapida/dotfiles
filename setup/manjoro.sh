@@ -36,4 +36,15 @@ systemctl start docker
 # journalctl -xe
 sudo usermod -a -G docker $USER
 
-sudo pacman -Sy code --noconfirm
+sudo pacman -Sy code python --noconfirm
+
+# TODO: AUR repos of applications installed
+# Chrome: https://aur.archlinux.org/google-chrome.git
+# Discord: https://aur.archlinux.org/discord.git
+# Android Studio: https://aur.archlinux.org/android-studio.git
+# Slack: https://aur.archlinux.org/slack-desktop.git
+# libc++: https://aur.archlinux.org/libc++.git
+
+# TODO: Tried to install but got PGP errors
+# https://aur.archlinux.org/spotify.git
+# https://aur.archlinux.org/libc++.git
