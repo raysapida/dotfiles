@@ -1,5 +1,5 @@
 #!/bin/bash
-pacman -Syy vim neovim
+pacman -Syy vim neovim yarn --noconfirm
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 
@@ -25,3 +25,5 @@ gem install rails
 gem install pry
 gem install solargraph
 gem install minitest
+
+nvm install stable
