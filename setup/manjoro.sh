@@ -14,3 +14,4 @@ curl -L git.io/antigen > ~raysapida/antigen.zsh
 # git clone https://aur.archlinux.org/rcm.git
 # cd rcm/
 # makepkg -si
+# rcup

@@ -1,6 +1,10 @@
 # skip_global_compinit=1
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/raysapida/.oh-my-zsh
+# TODO: Add a check for this based on the OS
+# Mac
+# export ZSH=/Users/raysapida/.oh-my-zsh
+export ZSH=/home/raysapida/.oh-my-zsh
+
 
 source ~raysapida/antigen.zsh
 
