@@ -34,3 +34,5 @@ systemctl start docker
 # DEBUG docker if it doesn't start
 # systemctl status docker.service
 # journalctl -xe
+
+sudo pacman -Sy code --noconfirm
