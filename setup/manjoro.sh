@@ -15,3 +15,13 @@ curl -L git.io/antigen > ~raysapida/antigen.zsh
 # cd rcm/
 # makepkg -si
 # rcup
+
+git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+cd ~/.rbenv && src/configure && make -C src
+mkdir -p "$(rbenv root)"/plugins
+rbenv install 2.6.3
+rbenv global 2.6.3
+gem install rails
+gem install pry
+gem install solargraph
+gem install minitest

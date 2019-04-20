@@ -121,7 +121,6 @@ export EDITOR="vim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 export PATH=$HOME/bin:$PATH
-eval "$(rbenv init -)"
 
 # some more ls aliases
 # alias ll='ls -alF'
@@ -198,3 +197,5 @@ if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysa
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
