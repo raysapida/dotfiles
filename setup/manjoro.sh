@@ -27,3 +27,10 @@ gem install solargraph
 gem install minitest
 
 nvm install stable
+
+sudo pacman -Sy docker docker-compose --noconfirm
+systemctl enable docker
+systemctl start docker
+# DEBUG docker if it doesn't start
+# systemctl status docker.service
+# journalctl -xe
