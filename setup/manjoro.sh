@@ -52,3 +52,6 @@ gpg --recv-key 931FF8E79F0876134EDDBDCCA87FF9DF48BF1C90
 gpg --recv-key 474E22316ABF4785A88C6E8EA2C794A986419D8A
 gpg --recv-key B6C8F98282B944E3B0D5C2530FC3042E345AD05D
 
+yarn global add create-react-app create-react-native-app react-native
+yarn global add gatsby-cli json-server live-server zero
+yarn global add vtop snyk artillery
