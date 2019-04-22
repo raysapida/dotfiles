@@ -121,6 +121,7 @@ export EDITOR="vim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 export PATH=$HOME/bin:$PATH
+export PATH=$HOME/.dotfiles/bin:$PATH
 
 # some more ls aliases
 # alias ll='ls -alF'
