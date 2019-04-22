@@ -55,3 +55,7 @@ gpg --recv-key B6C8F98282B944E3B0D5C2530FC3042E345AD05D
 yarn global add create-react-app create-react-native-app react-native
 yarn global add gatsby-cli json-server live-server zero
 yarn global add vtop snyk artillery
+
+# Swap caps lock with ctrl key
+setxkbmap -option caps:none
+setxkbmap -option ctrl:nocaps
