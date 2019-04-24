@@ -59,3 +59,7 @@ yarn global add vtop snyk artillery
 # Swap caps lock with ctrl key
 setxkbmap -option caps:none
 setxkbmap -option ctrl:nocaps
+
+# Imstall driver for realtek card reader
+pacman -S linux419-headers
+# https://aur.archlinux.org/rts5227-dkms.git
