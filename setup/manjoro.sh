@@ -44,6 +44,7 @@ sudo pacman -Sy code python --noconfirm
 # Android Studio: https://aur.archlinux.org/android-studio.git
 # Slack: https://aur.archlinux.org/slack-desktop.git
 # libc++: https://aur.archlinux.org/libc++.git
+# simple-mtpfs: https://aur.archlinux.org/simple-mtpfs.git
 
 # TODO: Tried to install but got PGP errors
 # https://aur.archlinux.org/spotify.git
@@ -63,3 +64,9 @@ setxkbmap -option ctrl:nocaps
 # Imstall driver for realtek card reader
 pacman -S linux419-headers
 # https://aur.archlinux.org/rts5227-dkms.git
+
+# Install KVM
+sudo pacman -S virt-manager qemu vde2 ebtables dnsmasq bridge-utils openbsd-netcat
+
+sudo systemctl enable libvirtd.service
+sudo systemctl start libvirtd.service

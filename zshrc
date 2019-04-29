@@ -185,8 +185,14 @@ alias lint='./node_modules/.bin/eslint --fix'
 
 alias b='buku --suggest'
 
-export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
-export ANDROID_HOME="/usr/local/share/android-sdk"
+# export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
+# export ANDROID_HOME="/usr/local/share/android-sdk"
+
+export ANDROID_HOME=$HOME/android
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
 
@@ -200,3 +206,5 @@ if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysa
 if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
+
+setxkbmap -option ctrl:nocaps
