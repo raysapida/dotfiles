@@ -115,6 +115,8 @@ Plug 'yuttie/comfortable-motion.vim'
 " Ctags plugin to show all tags in a file
 Plug 'majutsushi/tagbar'
 
+Plug 'Yggdroot/indentLine'
+
 " ========================================================================================
 " Language specific plugins
 
@@ -122,6 +124,7 @@ Plug 'majutsushi/tagbar'
 Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }
 Plug 'tpope/vim-bundler', { 'for': 'ruby' }
+Plug 'slim-template/vim-slim'
 
 " Javascript related Plugins
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
@@ -166,11 +169,16 @@ Plug 'tomlion/vim-solidity'
 " C Specific Plugins
 Plug 'justinmk/vim-syntax-extra'
 
+" Kotlin Specific Plugins
+Plug 'udalov/kotlin-vim'
+
 " Writing specific plugins
 Plug 'reedes/vim-pencil'
 Plug 'reedes/vim-lexical'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
+
+Plug 'glacambre/firenvim', { 'do': function('firenvim#install') }
 
 Plug 'w0rp/ale'
 Plug 'skywind3000/asyncrun.vim'
@@ -199,8 +207,8 @@ set incsearch     " do incremental searching
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
 set relativenumber
-" set background=light
-set background=dark
+set background=light
+" set background=dark
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -208,6 +216,7 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
   syntax on
 endif
 
+" \ 'background': 'dark',
 let g:thematic#theme_name = 'gruvbox'
 let g:thematic#defaults = {
 \ 'airline-theme': 'serene',
@@ -320,8 +329,8 @@ map <Leader>a :call RunAllSpecs()<CR>
 " let g:rspec_command = "VtrSendCommandToRunner! rspec {spec}"
 " let g:rspec_command = "VtrSendCommandToRunner! be rspec {spec}"
 " let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
-" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_local_rspec.sh {spec}"
-let g:rspec_command = "VtrSendCommandToRunner! ./scripts/rspec.sh {spec}"
+let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_local_rspec.sh {spec}"
+" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/rspec.sh {spec}"
 
 " fix for extra indents when pasting from clipboard
 nnoremap <leader>q :r!pbpaste<cr>
@@ -531,7 +540,7 @@ let g:ale_sign_warning = '.'
 let g:ale_lint_on_enter = 0
 
 let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
-let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
+" let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
 
 autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
@@ -546,7 +555,7 @@ tnoremap jk <C-\><C-n>
 "   close window if no results
 "   <leader>j - Search current directory for occurences of word under cursor
 nmap ; :Denite buffer -split=floating -winrow=1<CR>
-nmap <leader>t :Denite file/rec -split=floating -winrow=1<CR>
+nmap <leader>r :Denite file/rec -split=floating -winrow=1<CR>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty -mode=normal<CR>
 nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -mode=normal<CR>
 
@@ -575,3 +584,6 @@ let s:denite_options = {'default' : {
 nmap <silent> <leader>dd <Plug>(coc-definition)
 nmap <silent> <leader>dr <Plug>(coc-references)
 nmap <silent> <leader>dj <Plug>(coc-implementation)
+
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_conceal_code_blocks = 0
