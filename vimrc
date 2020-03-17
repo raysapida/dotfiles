@@ -41,6 +41,13 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
+func! Multiple_cursors_before()
+  call deoplete#init#_disable()
+endfunc
+func! Multiple_cursors_after()
+  call deoplete#init#_enable()
+endfunc
+
 " TODO: Choose one of these two to stick with
 " Fuzzy finding
 Plug 'Shougo/denite.nvim'
@@ -178,7 +185,7 @@ Plug 'reedes/vim-lexical'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
 
-Plug 'glacambre/firenvim', { 'do': function('firenvim#install') }
+Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
 Plug 'w0rp/ale'
 Plug 'skywind3000/asyncrun.vim'

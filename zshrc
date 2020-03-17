@@ -194,3 +194,4 @@ if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysa
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
+
