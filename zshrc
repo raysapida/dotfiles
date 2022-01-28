@@ -10,8 +10,9 @@ source ~raysapida/antigen.zsh
 # time that oh-my-zsh is loaded.
 # honukai
 # ZSH_THEME="miloshadzic"
-ZSH_THEME="muse"
+# ZSH_THEME="muse"
 # ZSH_THEME="agnoster"
+ZSH_THEME="spaceship"
 
 
 # Uncomment the following line to use case-sensitive completion.

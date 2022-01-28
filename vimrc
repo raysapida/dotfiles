@@ -35,8 +35,10 @@ Plug 'tpope/vim-vinegar'
 " Code completion using tab key
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
 else
   Plug 'Shougo/deoplete.nvim'
+  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
@@ -47,6 +49,11 @@ endfunc
 func! Multiple_cursors_after()
   call deoplete#init#_enable()
 endfunc
+
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 
 " TODO: Choose one of these two to stick with
 " Fuzzy finding
@@ -132,21 +139,25 @@ Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }
 Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 Plug 'slim-template/vim-slim'
+Plug 'kchmck/vim-coffee-script'
 
 " Javascript related Plugins
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
 Plug 'othree/yajs.vim', { 'for': 'javascript' }
 Plug 'isRuslan/vim-es6', { 'for': 'javascript' }
 Plug 'mustache/vim-mustache-handlebars', { 'for': 'javascript' }
-Plug 'kchmck/vim-coffee-script', { 'for': 'javascript' }
+" Plug 'kchmck/vim-coffee-script', { 'for': 'javascript' }
 Plug 'moll/vim-node', { 'for': 'javascript' }
-Plug 'mxw/vim-jsx', { 'for': 'javascript' }
+Plug 'MaxMEllon/vim-jsx-pretty', { 'for': 'javascript' }
+
 Plug 'justinj/vim-react-snippets', { 'for': 'javascript' }
 Plug 'nikvdp/ejs-syntax', { 'for': 'javascript' }
 Plug 'prettier/vim-prettier', { 'for': 'javascript' }
 Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
 Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
 Plug 'leafgarland/typescript-vim'
+
+Plug 'lumiliet/vim-twig'
 
 Plug 'mattn/emmet-vim'
 
@@ -203,6 +214,7 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 " Leader
 let mapleader = " "
 
+set foldmethod=indent
 set backspace=2   " Backspace deletes like most programs in insert mode
 set nobackup
 set nowritebackup
@@ -282,14 +294,16 @@ set diffopt+=vertical
 nnoremap <silent> <S-t> :tabnew %<CR>
 
 if $TMUX == ''
-  set clipboard+=unnamed
+  " set clipboard+=unnamed
+  set clipboard+=unnamedplus
 endif
 
 " OSX specific
 if has("unix")
   let s:uname = system("uname")
   if s:uname == "Darwin\n"
-    set clipboard=unnamed
+    " set clipboard=unnamed
+    set clipboard=unnamedplus
   endif
 endif
 
@@ -368,6 +382,7 @@ if executable('ag')
 
   " ag is fast enough that CtrlP doesn't need to cache
   let g:ctrlp_use_caching = 0
+
 
   if !exists(":Ag")
     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
@@ -520,7 +535,7 @@ let g:ycm_key_list_previous_completion=[]
 autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
 " Use deoplete.
-let g:deoplete#enable_at_startup = 1
+" let g:deoplete#enable_at_startup = 1
 
 " search first in current directory then file directory for tag file
 set tags=tags,./tags
@@ -564,7 +579,7 @@ tnoremap jk <C-\><C-n>
 nmap ; :Denite buffer -split=floating -winrow=1<CR>
 nmap <leader>r :Denite file/rec -split=floating -winrow=1<CR>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty -mode=normal<CR>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -mode=normal<CR>
+nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -split=floating -winrow=1<CR>
 
 " Custom options for Denite
 "   auto_resize             - Auto resize the Denite window height automatically.
@@ -587,6 +602,23 @@ let s:denite_options = {'default' : {
       \ 'highlight_matched_range': 'Normal'
       \ }}
 
+
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+  \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> d
+  \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+  \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+  \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+  \ denite#do_map('toggle_select').'j'
+endfunction
+
 " === coc.nvim === "
 nmap <silent> <leader>dd <Plug>(coc-definition)
 nmap <silent> <leader>dr <Plug>(coc-references)
@@ -594,3 +626,7 @@ nmap <silent> <leader>dj <Plug>(coc-implementation)
 
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0
+
+" let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
+let g:python3_host_prog = $GLOBALINSTALLDIR . "/opt/anaconda3/bin/python3"
+let g:pymode_doc_bind = 'L'
