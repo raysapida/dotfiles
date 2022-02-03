@@ -71,7 +71,7 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'easymotion/vim-easymotion'
 
 " Allow multiple cursors using ctrl n, ctrl p , ctrl x
-Plug 'terryma/vim-multiple-cursors'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 
 " Creates a closing pairing for parentheses, brackets, etc
 Plug 'Townk/vim-autoclose'
@@ -511,15 +511,6 @@ function! NumberToggle()
 endfunc
 nnoremap <C-i> :call NumberToggle()<cr>
 
-" Turn off multi cursor default mappings
-let g:multi_cursor_use_default_mapping=0
-
-" Same as default for now but config is now explicit
-let g:multi_cursor_next_key='<C-n>'
-let g:multi_cursor_prev_key='<C-p>'
-let g:multi_cursor_skip_key='<C-x>'
-let g:multi_cursor_quit_key='<C-q>'
-
 " Indent settings
 set ts=2 sw=2 et
 let g:indent_guides_start_level = 2
@@ -550,7 +541,6 @@ autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
 let g:UltiSnipsExpandTrigger       = '<c-t>'
 let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
-" let g:UltiSnipsJumpForwardTrigger  = '<c-e>'
 let g:UltiSnipsJumpBackwardTrigger = '<c-a>'
 
 " Use deoplete.
