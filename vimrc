@@ -50,10 +50,10 @@ func! Multiple_cursors_after()
   call deoplete#init#_enable()
 endfunc
 
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+" Plug 'autozimu/LanguageClient-neovim', {
+"     \ 'branch': 'next',
+"     \ 'do': 'bash install.sh',
+"     \ }
 
 " TODO: Choose one of these two to stick with
 " Fuzzy finding
@@ -112,6 +112,20 @@ Plug 'keith/tmux.vim'
 " Plugin 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+Plug 'ncm2/ncm2-ultisnips'
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" IMPORTANT: :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+
+" NOTE: you need to install completion sources to get completions. Check
+" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
 
 
 " Plugins for changing the themes
@@ -196,12 +210,12 @@ Plug 'reedes/vim-lexical'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/limelight.vim'
 
-Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
 
-Plug 'w0rp/ale'
-Plug 'skywind3000/asyncrun.vim'
+" Plug 'w0rp/ale'
+" Plug 'skywind3000/asyncrun.vim'
 
-Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+" Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 
 call plug#end()
 
@@ -349,8 +363,8 @@ map <Leader>a :call RunAllSpecs()<CR>
 " let g:rspec_command = "call VtrSendCommand('rspec {spec}')"
 " let g:rspec_command = "VtrSendCommandToRunner! rspec {spec}"
 " let g:rspec_command = "VtrSendCommandToRunner! be rspec {spec}"
-" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
-let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_local_rspec.sh {spec}"
+let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_tests.sh {spec}"
+" let g:rspec_command = "VtrSendCommandToRunner! ./scripts/run_local_rspec.sh {spec}"
 " let g:rspec_command = "VtrSendCommandToRunner! ./scripts/rspec.sh {spec}"
 
 " fix for extra indents when pasting from clipboard
@@ -534,8 +548,34 @@ let g:ycm_key_list_previous_completion=[]
 " Uses the prettier js library to format js and jsx files
 autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
+let g:UltiSnipsExpandTrigger       = '<c-t>'
+let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
+" let g:UltiSnipsJumpForwardTrigger  = '<c-e>'
+let g:UltiSnipsJumpBackwardTrigger = '<c-a>'
+
 " Use deoplete.
-" let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_at_startup = 1
+
+augroup ncm2
+  au!
+  autocmd BufEnter * call ncm2#enable_for_buffer()
+  set completeopt=noinsert,menuone,noselect
+  au User Ncm2PopupOpen set completeopt=noinsert,menuone,noselect
+  au User Ncm2PopupClose set completeopt=menuone
+augroup END
+
+" Cycle through completion entries with tab/shift+tab
+inoremap <expr> <tab> pumvisible() ? "\<c-n>" : "\<tab>"
+inoremap <expr> <s-tab> pumvisible() ? "\<c-p>" : "\<tab>"
+
+" Parameter expansion for selected entry via Enter
+inoremap <silent> <expr> <CR> (pumvisible() ? ncm2_ultisnips#expand_or("\<CR>", 'n') : "\<CR>")
+
+" Optionally
+let ncm2#complete_length = [[1, 2]]
+let g:ncm2#matcher = 'substrfuzzy'
+
+
 
 " search first in current directory then file directory for tag file
 set tags=tags,./tags
