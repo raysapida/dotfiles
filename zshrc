@@ -196,3 +196,7 @@ if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysa
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
 
+
+# https://github.com/rails/docked
+# docker volume create ruby-bundle-cache
+alias docked='docker run --rm -it -v ${PWD}:/rails -v ruby-bundle-cache:/bundle -p 3000:3000 ghcr.io/rails/cli'

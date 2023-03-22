@@ -32,6 +32,9 @@ Plug 'tpope/vim-surround'
 " netrw enhancement
 Plug 'tpope/vim-vinegar'
 
+" A tree explorer plugin for vim.
+Plug 'preservim/nerdtree'
+
 " Code completion using tab key
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -43,12 +46,6 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
-func! Multiple_cursors_before()
-  call deoplete#init#_disable()
-endfunc
-func! Multiple_cursors_after()
-  call deoplete#init#_enable()
-endfunc
 
 " Plug 'autozimu/LanguageClient-neovim', {
 "     \ 'branch': 'next',
@@ -539,12 +536,26 @@ let g:ycm_key_list_previous_completion=[]
 " Uses the prettier js library to format js and jsx files
 autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
-let g:UltiSnipsExpandTrigger       = '<c-t>'
-let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
-let g:UltiSnipsJumpBackwardTrigger = '<c-a>'
 
 " Use deoplete.
 let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer']})
+
+function g:Multiple_cursors_before()
+  call deoplete#custom#buffer_option('auto_complete', v:false)
+endfunction
+function g:Multiple_cursors_after()
+  call deoplete#custom#buffer_option('auto_complete', v:true)
+endfunction
+
+" Trigger configuration. Do not use <tab> if you use
+" https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger='<leader>e'
+" " shortcut to go to next position
+let g:UltiSnipsJumpForwardTrigger='<c-j>'
+" " shortcut to go to previous position
+let g:UltiSnipsJumpBackwardTrigger='<c-k>'
+
 
 augroup ncm2
   au!
@@ -660,3 +671,5 @@ let g:vim_markdown_conceal_code_blocks = 0
 " let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
 let g:python3_host_prog = $GLOBALINSTALLDIR . "/opt/anaconda3/bin/python3"
 let g:pymode_doc_bind = 'L'
+
+set autoindent expandtab tabstop=2 shiftwidth=2
