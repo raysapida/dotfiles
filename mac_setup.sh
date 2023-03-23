@@ -13,6 +13,7 @@ brew install neovim
 brew install tmux
 brew install rbenv
 brew install python
+brew install the_silver_searcher
 
 brew install rcm
 lsrc

@@ -1,18 +1,15 @@
 # skip_global_compinit=1
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/raysapida/.oh-my-zsh
+# export ZSH=/Users/raysapida/.oh-my-zsh
+# export ZSH=/Users/raymond/.oh-my-zsh
 
-source ~raysapida/antigen.zsh
+#source ~raysapida/antigen.zsh
+# source ~raymond/antigen.zsh
+source $HOME/antigen.zsh
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# honukai
-# ZSH_THEME="miloshadzic"
-# ZSH_THEME="muse"
-# ZSH_THEME="agnoster"
-ZSH_THEME="spaceship"
+# Add bin files in dotfiles in path
+export PATH="$HOME/.dotfiles/bin:$PATH"
+
 
 
 # Uncomment the following line to use case-sensitive completion.
@@ -53,19 +50,13 @@ ZSH_THEME="spaceship"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# plugins=(git npm docker rails brew)
-plugins=(git rails yarn docker)
 
 # User configuration
 
 # export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 # export MANPATH="/usr/local/man:$MANPATH"
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -114,7 +105,7 @@ source $ZSH/oh-my-zsh.sh
 
 
 ## Copied from .bash_profile
-export EDITOR="vim"
+export EDITOR="nvim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 export PATH=$HOME/bin:$PATH
@@ -146,8 +137,21 @@ setopt inc_append_history
 setopt share_history
 
 # antigen bundle zsh-users/zsh-syntax-highlighting
-# antigen bundle robbyrussell/oh-my-zsh
+antigen bundle robbyrussell/oh-my-zsh
 antigen bundle lukechilds/zsh-nvm
+
+antigen use oh-my-zsh
+
+antigen bundle git
+antigen bundle command-not-found
+antigen bundle docker
+
+# Load bundles from external repos
+antigen bundle zsh-users/zsh-completions
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-syntax-highlighting
+
+antigen theme denysdovhan/spaceship-prompt
 
 antigen apply
 
@@ -177,6 +181,7 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 alias rn-x='react-native run-ios --simulator="iPhone X"'
 
 export PATH=$PATH:/Users/raysapida/platform-tools/bin
+export PATH=$PATH:/Users/raymond/Library/Android/sdk/platform-tools
 
 alias lint='./node_modules/.bin/eslint --fix'
 
@@ -190,9 +195,45 @@ alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -
 alias usb-info='system_profiler SPUSBDataType'
 alias run-local='./scripts/run_local.sh'
 
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+# plugins=(git npm docker rails brew)
+plugins=(git rails yarn docker)
+
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f '/Users/raymond/work/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raymond/work/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc'; fi
 
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+alias rl='./scripts/run_local.sh'
+alias rt='./scripts/run_tests.sh'
+alias rterm='./scripts/run_terminal.sh'
+
+export DOCKER_BUILDKIT=0
+export COMPOSE_DOCKER_CLI_BUILD=0
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)

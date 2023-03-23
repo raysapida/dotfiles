@@ -2,13 +2,31 @@ set nocompatible
 filetype off
 let &t_Co=256
 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-call plug#begin('~/.vim/plugged')
+" VIM related
+"if empty(glob('~/.vim/autoload/plug.vim'))
+"  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+"        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+"endif
+" call plug#begin('~/.vim/plugged')
+
+" NVIM related
+"if empty(glob('~/.config/nvim/autoload/plug.vim'))
+"  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+"    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"  "autocmd VimEnter * PlugInstall
+"  "autocmd VimEnter * PlugInstall | source $MYVIMRC
+"endif
+
+" call plug#begin('~/.config/nvim/autoload/plug.vim')
+call plug#begin()
+" call plug#begin('~/.config/nvim/plugged')
 
 
 " ========================================================================================
@@ -151,7 +169,7 @@ Plug 'Yggdroot/indentLine'
 " Ruby / Rails specific plugins
 Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }
-Plug 'tpope/vim-bundler', { 'for': 'ruby' }
+" Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 Plug 'slim-template/vim-slim'
 Plug 'kchmck/vim-coffee-script'
 
@@ -187,6 +205,7 @@ Plug 'ekalinin/Dockerfile.vim'
 
 " Python specific plugins
 Plug 'klen/python-mode', { 'for': 'python' }
+Plug 'jupyter-vim/jupyter-vim'
 
 " Templating specific plugins
 Plug 'tpope/vim-haml'
@@ -537,7 +556,7 @@ let g:ycm_key_list_select_completion=[]
 let g:ycm_key_list_previous_completion=[]
 
 " Uses the prettier js library to format js and jsx files
-autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
+" autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
 let g:UltiSnipsExpandTrigger       = '<c-t>'
 let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
@@ -591,10 +610,10 @@ let g:ale_sign_error = '●'
 let g:ale_sign_warning = '.'
 let g:ale_lint_on_enter = 0
 
-let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
+" let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
 " let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
 
-autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
+" autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
 " Exit terminal mode
 tnoremap <Esc> <C-\><C-n>
@@ -656,7 +675,9 @@ nmap <silent> <leader>dj <Plug>(coc-implementation)
 
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0
+set conceallevel=0
 
 " let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
-let g:python3_host_prog = $GLOBALINSTALLDIR . "/opt/anaconda3/bin/python3"
-let g:pymode_doc_bind = 'L'
+" let g:python3_host_prog = "/usr/bin/python3"
+let g:python3_host_prog = "/opt/homebrew/bin/python3"
+" let g:python3_host_prog = "/opt/miniconda3/envs/rapids/bin/python"
