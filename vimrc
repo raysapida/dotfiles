@@ -61,6 +61,8 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
+Plug 'github/copilot.vim'
+
 func! Multiple_cursors_before()
   call deoplete#init#_disable()
 endfunc
