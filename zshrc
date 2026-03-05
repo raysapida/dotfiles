@@ -11,7 +11,6 @@ source $HOME/antigen.zsh
 export PATH="$HOME/.dotfiles/bin:$PATH"
 
 
-
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
 
@@ -124,10 +123,12 @@ alias b='bundle'
 alias be='bundle exec'
 alias tag='ctags -R -f ./.git/tags .'
 
+alias vim='nvim'
 
 alias ev='nvim ~/.vimrc'
 alias et='nvim ~/.tmux.conf'
 alias ez='nvim ~/.zshrc'
+alias en='nvim ~/.config/nvim/init.vim'
 
 alias zshreload="source ~/.zshrc"
 
@@ -202,6 +203,7 @@ alias run-local='./scripts/run_local.sh'
 # plugins=(git npm docker rails brew)
 plugins=(git rails yarn docker)
 
+export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.11
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/raymond/work/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raymond/work/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -210,17 +212,17 @@ if [ -f '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc' ]; then . '/Us
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
+# __conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+#         . "/opt/miniconda3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/opt/miniconda3/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
 # <<< conda initialize <<<
 
 
@@ -238,4 +240,33 @@ export COMPOSE_DOCKER_CLI_BUILD=0
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
+# nvm use default
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+corepack enable
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+export PATH=$PATH:/usr/local/go/bin
+
+# export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+# fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
+# autoload -Uz compinit && compinit
+# . "$HOME/.asdf/asdf.sh"
+# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+# export PLATFORMIO_PYTHON_EXE="$(asdf where python)/bin/python"
+
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export IDF_PATH="/Users/raymond/esp/esp-idf"
+
+alias get_idf='. $HOME/esp/esp-idf/export.sh'
+
 nvm use default
+r(){ rtfm; cd "$(cat ~/.rtfm_last_dir)"; } # rtfm launcher
+export PATH="$HOME/.local/bin:$PATH"
+. "$HOME/.cargo/env"

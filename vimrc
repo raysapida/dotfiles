@@ -53,15 +53,17 @@ Plug 'tpope/vim-vinegar'
 " Code completion using tab key
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
+
+  " TODO: Uncomment while testing copilot
+  " Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
 else
   Plug 'Shougo/deoplete.nvim'
-  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
+  " Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 
-Plug 'github/copilot.vim'
+" Plug 'github/copilot.vim'
 
 func! Multiple_cursors_before()
   call deoplete#init#_disable()
@@ -165,6 +167,8 @@ Plug 'majutsushi/tagbar'
 
 Plug 'Yggdroot/indentLine'
 
+Plug 'chrisbra/csv.vim'
+
 " ========================================================================================
 " Language specific plugins
 
@@ -206,8 +210,9 @@ Plug 'ap/vim-css-color'
 Plug 'ekalinin/Dockerfile.vim'
 
 " Python specific plugins
-Plug 'klen/python-mode', { 'for': 'python' }
-Plug 'jupyter-vim/jupyter-vim'
+" Plug 'klen/python-mode', { 'for': 'python' }
+" Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+" Plug 'jupyter-vim/jupyter-vim'
 
 " Templating specific plugins
 Plug 'tpope/vim-haml'
@@ -238,7 +243,34 @@ Plug 'junegunn/limelight.vim'
 
 " Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 
+Plug 'hashivim/vim-terraform'
+
+Plug 'hat0uma/csvview.nvim'
+
+Plug 'neovim/nvim-lspconfig'
+
+Plug 'mfussenegger/nvim-dap'
+Plug 'mfussenegger/nvim-dap-python'
+
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+
+
+
 call plug#end()
+
+lua << EOF
+require('lspconfig').pyright.setup{}
+require("dap-python").setup("/usr/local/bin/python")
+local lspconfig = require('lspconfig')
+lspconfig.ruby_lsp.setup({
+  init_options = {
+    formatter = 'standard',
+    linters = { 'standard' },
+  },
+})
+EOF
+
+lua require('csvview').setup()
 
 filetype plugin indent on
 
@@ -249,6 +281,7 @@ autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 " Leader
 let mapleader = " "
 
+set foldlevel=99
 set foldmethod=indent
 set backspace=2   " Backspace deletes like most programs in insert mode
 set nobackup
@@ -261,8 +294,8 @@ set incsearch     " do incremental searching
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
 set relativenumber
+" set background=light
 set background=light
-" set background=dark
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -270,7 +303,6 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
   syntax on
 endif
 
-" \ 'background': 'dark',
 let g:thematic#theme_name = 'gruvbox'
 let g:thematic#defaults = {
 \ 'airline-theme': 'serene',
@@ -681,5 +713,7 @@ set conceallevel=0
 
 " let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
 " let g:python3_host_prog = "/usr/bin/python3"
-let g:python3_host_prog = "/opt/homebrew/bin/python3"
+" let g:python3_host_prog = "/opt/homebrew/bin/python3"
 " let g:python3_host_prog = "/opt/miniconda3/envs/rapids/bin/python"
+" let g:python3_host_prog = "/opt/miniconda3/bin/python3"
+"let g:python3_host_prog = "/Users/raymond/.asdf/shims/python"
