@@ -5,6 +5,8 @@
 
 #source ~raysapida/antigen.zsh
 # source ~raymond/antigen.zsh
+ANTIGEN_AUTO_UPDATE=false
+
 source $HOME/antigen.zsh
 
 # Add bin files in dotfiles in path
@@ -262,14 +264,13 @@ corepack enable
 # [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 export NVM_DIR="$HOME/.nvm"
-nvm() {
-  unfunction nvm
+nvm() { unfunction nvm; _load_nvm; nvm "$@"; }
+_load_nvm() {
   [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
   [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-  nvm "$@"
 }
-node() { nvm; node "$@"; }
-npm() { nvm; npm "$@"; }
+node() { unfunction node; _load_nvm; node "$@"; }
+npm() { unfunction npm; _load_nvm; npm "$@"; }
 
 export PATH=$PATH:/usr/local/go/bin
 
