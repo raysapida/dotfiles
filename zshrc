@@ -139,7 +139,7 @@ setopt share_history
 
 # antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle robbyrussell/oh-my-zsh
-antigen bundle lukechilds/zsh-nvm
+# antigen bundle lukechilds/zsh-nvm
 
 antigen use oh-my-zsh
 
@@ -153,6 +153,16 @@ antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle zsh-users/zsh-syntax-highlighting
 
 antigen theme denysdovhan/spaceship-prompt
+
+SPACESHIP_PROMPT_ORDER=(
+  dir
+  git
+  ruby
+  node
+  exec_time
+  line_sep
+  char
+)
 
 antigen apply
 
@@ -238,18 +248,28 @@ alias rterm='./scripts/run_terminal.sh'
 export DOCKER_BUILDKIT=0
 export COMPOSE_DOCKER_CLI_BUILD=0
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
-[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
-
-# nvm use default
+# [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
 
 corepack enable
 
+# nvm use default
+# export NVM_LAZY_LOAD=true
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+# [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+nvm() {
+  unfunction nvm
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  nvm "$@"
+}
+node() { nvm; node "$@"; }
+npm() { nvm; npm "$@"; }
 
 export PATH=$PATH:/usr/local/go/bin
 
@@ -266,7 +286,6 @@ export IDF_PATH="/Users/raymond/esp/esp-idf"
 
 alias get_idf='. $HOME/esp/esp-idf/export.sh'
 
-nvm use default
 r(){ rtfm; cd "$(cat ~/.rtfm_last_dir)"; } # rtfm launcher
 export PATH="$HOME/.local/bin:$PATH"
 . "$HOME/.cargo/env"
