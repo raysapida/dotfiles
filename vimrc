@@ -260,7 +260,7 @@ call plug#end()
 
 lua << EOF
 require('lspconfig').pyright.setup{}
-require("dap-python").setup("/usr/local/bin/python")
+require("dap-python").setup("/opt/homebrew/bin/python3")
 local lspconfig = require('lspconfig')
 lspconfig.ruby_lsp.setup({
   init_options = {
@@ -713,7 +713,7 @@ set conceallevel=0
 
 " let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
 " let g:python3_host_prog = "/usr/bin/python3"
-" let g:python3_host_prog = "/opt/homebrew/bin/python3"
+let g:python3_host_prog = expand("~/.config/nvim/nvim-venv/bin/python3")
 " let g:python3_host_prog = "/opt/miniconda3/envs/rapids/bin/python"
 " let g:python3_host_prog = "/opt/miniconda3/bin/python3"
 "let g:python3_host_prog = "/Users/raymond/.asdf/shims/python"

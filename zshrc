@@ -110,7 +110,7 @@ export EDITOR="nvim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 export PATH=$HOME/bin:$PATH
-eval "$(rbenv init -)"
+command -v rbenv &>/dev/null && eval "$(rbenv init -)"
 
 # some more ls aliases
 # alias ll='ls -alF'
@@ -121,7 +121,6 @@ eval "$(rbenv init -)"
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-alias b='bundle'
 alias be='bundle exec'
 alias tag='ctags -R -f ./.git/tags .'
 
@@ -194,7 +193,7 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 alias rn-x='react-native run-ios --simulator="iPhone X"'
 
 export PATH=$PATH:/Users/raysapida/platform-tools/bin
-export PATH=$PATH:/Users/raymond/Library/Android/sdk/platform-tools
+export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
 
 alias lint='./node_modules/.bin/eslint --fix'
 
@@ -217,10 +216,10 @@ plugins=(git rails yarn docker)
 
 export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.11
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/raymond/work/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raymond/work/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/work/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/work/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/work/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/work/google-cloud-sdk/completion.zsh.inc"; fi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -238,7 +237,6 @@ if [ -f '/Users/raymond/work/google-cloud-sdk/completion.zsh.inc' ]; then . '/Us
 # <<< conda initialize <<<
 
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -283,10 +281,10 @@ export PATH=$PATH:/usr/local/go/bin
 
 export JAVA_HOME=$(/usr/libexec/java_home -v 17)
 export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
-export IDF_PATH="/Users/raymond/esp/esp-idf"
+export IDF_PATH="$HOME/esp/esp-idf"
 
 alias get_idf='. $HOME/esp/esp-idf/export.sh'
 
 r(){ rtfm; cd "$(cat ~/.rtfm_last_dir)"; } # rtfm launcher
 export PATH="$HOME/.local/bin:$PATH"
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(nvim --headless \"+checkhealth\" \"+qa\")",
+      "Bash(NVIM_PYTHON_LOG_FILE=/tmp/nvim_python.log nvim --headless \"+messages\" \"+qa\")",
+      "Read(//tmp/**)"
+    ]
+  }
+}
