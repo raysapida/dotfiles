@@ -455,6 +455,8 @@ let g:tmuxline_preset = {
       \'z'    : '#(~/bin/battery Discharging) - #h'}
 
 " Relative / Absolute line numbers toggle
+nnoremap <Leader>bg :lua vim.o.background = vim.o.background == "dark" and "light" or "dark"<CR>
+
 function! NumberToggle()
   if(&relativenumber == 1)
     set number
