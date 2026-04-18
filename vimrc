@@ -50,27 +50,13 @@ Plug 'tpope/vim-surround'
 " netrw enhancement
 Plug 'tpope/vim-vinegar'
 
-" Code completion using tab key
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-
-  " TODO: Uncomment while testing copilot
-  " Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  " Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-
 " Plug 'github/copilot.vim'
 
-func! Multiple_cursors_before()
-  call deoplete#init#_disable()
-endfunc
-func! Multiple_cursors_after()
-  call deoplete#init#_enable()
-endfunc
+" Completion
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
 
 " Plug 'autozimu/LanguageClient-neovim', {
 "     \ 'branch': 'next',
@@ -134,20 +120,6 @@ Plug 'keith/tmux.vim'
 " Plugin 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-ultisnips'
-
-" enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
-
-" IMPORTANT: :help Ncm2PopupOpen for more information
-set completeopt=noinsert,menuone,noselect
-
-" NOTE: you need to install completion sources to get completions. Check
-" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
 
 
 " Plugins for changing the themes
@@ -259,14 +231,36 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': 
 call plug#end()
 
 lua << EOF
-require('lspconfig').pyright.setup{}
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+require('lspconfig').pyright.setup({ capabilities = capabilities })
 require("dap-python").setup("/opt/homebrew/bin/python3")
-local lspconfig = require('lspconfig')
-lspconfig.ruby_lsp.setup({
+require('lspconfig').ruby_lsp.setup({
+  capabilities = capabilities,
   init_options = {
     formatter = 'standard',
     linters = { 'standard' },
   },
+})
+
+local cmp = require('cmp')
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then cmp.select_next_item() else fallback() end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then cmp.select_prev_item() else fallback() end
+    end, { 'i', 's' }),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }),
+    ['<C-Space>'] = cmp.mapping.complete(),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+  }, {
+    { name = 'buffer' },
+    { name = 'path' },
+  }),
 })
 EOF
 
@@ -596,27 +590,7 @@ let g:UltiSnipsExpandTrigger       = '<c-t>'
 let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
 let g:UltiSnipsJumpBackwardTrigger = '<c-a>'
 
-" Use deoplete.
-let g:deoplete#enable_at_startup = 1
-
-augroup ncm2
-  au!
-  autocmd BufEnter * call ncm2#enable_for_buffer()
-  set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupOpen set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupClose set completeopt=menuone
-augroup END
-
-" Cycle through completion entries with tab/shift+tab
-inoremap <expr> <tab> pumvisible() ? "\<c-n>" : "\<tab>"
-inoremap <expr> <s-tab> pumvisible() ? "\<c-p>" : "\<tab>"
-
-" Parameter expansion for selected entry via Enter
-inoremap <silent> <expr> <CR> (pumvisible() ? ncm2_ultisnips#expand_or("\<CR>", 'n') : "\<CR>")
-
-" Optionally
-let ncm2#complete_length = [[1, 2]]
-let g:ncm2#matcher = 'substrfuzzy'
+set completeopt=menu,menuone,noselect
 
 
 
@@ -711,9 +685,3 @@ let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0
 set conceallevel=0
 
-" let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
-" let g:python3_host_prog = "/usr/bin/python3"
-let g:python3_host_prog = expand("~/.config/nvim/nvim-venv/bin/python3")
-" let g:python3_host_prog = "/opt/miniconda3/envs/rapids/bin/python"
-" let g:python3_host_prog = "/opt/miniconda3/bin/python3"
-"let g:python3_host_prog = "/Users/raymond/.asdf/shims/python"
