@@ -1,10 +1,4 @@
 # skip_global_compinit=1
-# Path to your oh-my-zsh installation.
-# export ZSH=/Users/raysapida/.oh-my-zsh
-# export ZSH=/Users/raymond/.oh-my-zsh
-
-#source ~raysapida/antigen.zsh
-# source ~raymond/antigen.zsh
 ANTIGEN_AUTO_UPDATE=false
 
 source $HOME/antigen.zsh
@@ -185,14 +179,14 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 
 # tabtab source for serverless package
 # uninstall by removing these lines or running `tabtab uninstall serverless`
-[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh
+[[ -f "$HOME/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh" ]] && . "$HOME/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh"
 # tabtab source for sls package
 # uninstall by removing these lines or running `tabtab uninstall sls`
-[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh
+[[ -f "$HOME/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh" ]] && . "$HOME/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh"
 
 alias rn-x='react-native run-ios --simulator="iPhone X"'
 
-export PATH=$PATH:/Users/raysapida/platform-tools/bin
+export PATH=$PATH:$HOME/platform-tools/bin
 export PATH=$PATH:$HOME/Library/Android/sdk/platform-tools
 
 alias lint='./node_modules/.bin/eslint --fix'
