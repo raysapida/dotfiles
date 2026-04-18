@@ -63,9 +63,9 @@ Plug 'hrsh7th/cmp-path'
 "     \ 'do': 'bash install.sh',
 "     \ }
 
-" TODO: Choose one of these two to stick with
 " Fuzzy finding
-Plug 'Shougo/denite.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-lua/plenary.nvim'
 " Full path fuzzy file, buffer, mru, tag, ... finder
 Plug 'ctrlpvim/ctrlp.vim'
 
@@ -240,6 +240,13 @@ require('lspconfig').ruby_lsp.setup({
   init_options = {
     formatter = 'standard',
     linters = { 'standard' },
+  },
+})
+
+require('telescope').setup({
+  defaults = {
+    layout_strategy = 'horizontal',
+    file_ignore_patterns = { 'node_modules', '.git/' },
   },
 })
 
@@ -627,54 +634,15 @@ let g:ale_lint_on_enter = 0
 tnoremap <Esc> <C-\><C-n>
 tnoremap jk <C-\><C-n>
 
-" === Denite shorcuts === "
-"   ;         - Browser currently open buffers
-"   <leader>t - Browse list of files in current directory
-"   <leader>g - Search current directory for occurences of given term and
-"   close window if no results
-"   <leader>j - Search current directory for occurences of word under cursor
-nmap ; :Denite buffer -split=floating -winrow=1<CR>
-nmap <leader>r :Denite file/rec -split=floating -winrow=1<CR>
-nnoremap <leader>g :<C-u>Denite grep:. -no-empty -mode=normal<CR>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -split=floating -winrow=1<CR>
-
-" Custom options for Denite
-"   auto_resize             - Auto resize the Denite window height automatically.
-"   prompt                  - Customize denite prompt
-"   direction               - Specify Denite window direction as directly below current pane
-"   winminheight            - Specify min height for Denite window
-"   highlight_mode_insert   - Specify h1-CursorLine in insert mode
-"   prompt_highlight        - Specify color of prompt
-"   highlight_matched_char  - Matched characters highlight
-"   highlight_matched_range - matched range highlight
-let s:denite_options = {'default' : {
-      \ 'auto_resize': 1,
-      \ 'prompt': 'λ:',
-      \ 'direction': 'dynamictop',
-      \ 'winminheight': '10',
-      \ 'highlight_mode_insert': 'Visual',
-      \ 'highlight_mode_normal': 'Visual',
-      \ 'prompt_highlight': 'Function',
-      \ 'highlight_matched_char': 'Function',
-      \ 'highlight_matched_range': 'Normal'
-      \ }}
-
-
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-  \ denite#do_map('toggle_select').'j'
-endfunction
+" === Telescope shortcuts === "
+"   ;         - Browse open buffers
+"   <leader>r - Browse files in current directory
+"   <leader>g - Search for string in current directory
+"   <leader>j - Search for word under cursor
+nmap ; :Telescope buffers<CR>
+nmap <leader>ff :Telescope find_files<CR>
+nnoremap <leader>g :Telescope live_grep<CR>
+nnoremap <leader>j :Telescope grep_string<CR>
 
 " === coc.nvim === "
 nmap <silent> <leader>dd <Plug>(coc-definition)
