@@ -113,6 +113,14 @@
 - [x] Fixed `set background=light` → `set background=dark` (was overriding thematic's dark default)
 - **Why:** lazy.nvim defers plugin loading by default. Colorscheme plugins must set `priority = 1000` and `lazy = false` to load before all other plugins, otherwise the theme isn't applied on startup.
 
+### 22. Sync nvim theme with macOS dark/light mode
+- [x] Added `sync_macos_appearance()` lua function that reads macOS appearance via `defaults read -g AppleInterfaceStyle`
+- [x] Called on startup to set initial background
+- [x] Wired to `FocusGained` autocmd so nvim updates when you switch back to it after toggling macOS appearance
+- **Why:** gruvbox supports both dark and light variants via `vim.o.background`. macOS stores the current appearance in `AppleInterfaceStyle` — `"Dark"` when dark mode is on, empty/missing when light. Reading it with `defaults read` is instant and requires no plugins.
+- **How to toggle:** Use a macOS Shortcut (Shortcuts app → New → Toggle Dark Mode → assign keyboard shortcut). iTerm2 follows macOS appearance automatically if "Use different colors for light/dark mode" is enabled in Profiles → Colors. nvim follows on next `FocusGained`.
+- **Manual nvim toggle:** `<Space>bg` toggles between dark and light independently of macOS appearance.
+
 ---
 
 ## Lessons Learned

@@ -316,6 +316,19 @@ syntax enable
 " automatically rebalance windows on vim resize
 autocmd VimResized * :wincmd =
 
+lua << EOF
+local function sync_macos_appearance()
+  local appearance = vim.fn.system("defaults read -g AppleInterfaceStyle 2>/dev/null"):gsub("%s+", "")
+  vim.o.background = appearance == "Dark" and "dark" or "light"
+end
+
+sync_macos_appearance()
+
+vim.api.nvim_create_autocmd("FocusGained", {
+  callback = sync_macos_appearance,
+})
+EOF
+
 " zoom a vim pane, <C-w>= to re-balance
 nnoremap <leader>- :wincmd _<cr>:wincmd \|<cr>
 nnoremap <leader>= :wincmd =<cr>
