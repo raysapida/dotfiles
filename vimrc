@@ -621,14 +621,6 @@ let g:user_emmet_settings = {
       \}
 
 
-let g:ale_sign_error = '●'
-let g:ale_sign_warning = '.'
-let g:ale_lint_on_enter = 0
-
-" let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
-" let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
-
-" autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
 " Exit terminal mode
 tnoremap <Esc> <C-\><C-n>
@@ -644,10 +636,6 @@ nmap <leader>ff :Telescope find_files<CR>
 nnoremap <leader>g :Telescope live_grep<CR>
 nnoremap <leader>j :Telescope grep_string<CR>
 
-" === coc.nvim === "
-nmap <silent> <leader>dd <Plug>(coc-definition)
-nmap <silent> <leader>dr <Plug>(coc-references)
-nmap <silent> <leader>dj <Plug>(coc-implementation)
 
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0

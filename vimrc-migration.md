@@ -20,20 +20,20 @@
 ## Medium Priority — Dead Config Cleanup
 
 ### 3. Remove coc.nvim mappings
-- [ ] Remove `<leader>dd`, `<leader>dr`, `<leader>dj` coc keymaps (lines 706–708)
+- [x] Remove `<leader>dd`, `<leader>dr`, `<leader>dj` coc keymaps
 
 ### 4. Remove ALE settings
-- [ ] Remove `g:ale_sign_error`, `g:ale_sign_warning`, `g:ale_lint_on_enter` (lines 643–645)
+- [x] Remove `g:ale_sign_error`, `g:ale_sign_warning`, `g:ale_lint_on_enter`
 
 ### 5. Deduplicate nvim-yarp
-- [ ] Already handled by removing deoplete + ncm2 entirely (see item 1)
+- [x] Already handled by removing deoplete + ncm2 entirely (see item 1)
 
 ---
 
 ## Low Priority
 
 ### 6. Remove g:python3_host_prog
-- [ ] Remove after deoplete + ncm2 are gone (nvim-lspconfig does not need a Python host)
+- [x] Remove after deoplete + ncm2 are gone (nvim-lspconfig does not need a Python host)
 
 ---
 
