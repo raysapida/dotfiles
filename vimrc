@@ -8,25 +8,7 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-" VIM related
-"if empty(glob('~/.vim/autoload/plug.vim'))
-"  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-"        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-"endif
-" call plug#begin('~/.vim/plugged')
-
-" NVIM related
-"if empty(glob('~/.config/nvim/autoload/plug.vim'))
-"  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
-"    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"  "autocmd VimEnter * PlugInstall
-"  "autocmd VimEnter * PlugInstall | source $MYVIMRC
-"endif
-
-" call plug#begin('~/.config/nvim/autoload/plug.vim')
 call plug#begin()
-" call plug#begin('~/.config/nvim/plugged')
 
 
 " ========================================================================================
@@ -66,14 +48,9 @@ Plug 'hrsh7th/cmp-path'
 " Fuzzy finding
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-lua/plenary.nvim'
-" Full path fuzzy file, buffer, mru, tag, ... finder
-Plug 'ctrlpvim/ctrlp.vim'
 
 " Allows vim to make dir when creating a new file
 Plug 'pbrisbin/vim-mkdir'
-
-" Displays indent levels
-Plug 'nathanaelkane/vim-indent-guides'
 
 " Navigation inside a file
 Plug 'easymotion/vim-easymotion'
@@ -137,9 +114,6 @@ Plug 'yuttie/comfortable-motion.vim'
 " Ctags plugin to show all tags in a file
 Plug 'majutsushi/tagbar'
 
-Plug 'Yggdroot/indentLine'
-
-Plug 'chrisbra/csv.vim'
 
 " ========================================================================================
 " Language specific plugins
@@ -275,8 +249,6 @@ lua require('csvview').setup()
 
 filetype plugin indent on
 
-filetype indent on
-
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
 " Leader
@@ -376,7 +348,6 @@ if has("unix")
 endif
 
 " Limelight specific configurations
-let g:limelight_conceal_ctermfg = 'gray'
 let g:limelight_conceal_ctermfg = 240
 " let g:limelight_default_coefficient = 0.7
 
@@ -435,23 +406,9 @@ nnoremap <Leader>0 :Goyo<CR>
 nnoremap <Leader>9 :Limelight!!<CR>
 let g:goyo_width = 90
 
-" ctrlp vim
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-
-
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
-  " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag -Q -l --nocolor --hidden -g "" %s'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-
-
   if !exists(":Ag")
     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
     nnoremap \ :Ag<SPACE>
@@ -565,13 +522,6 @@ function! NumberToggle()
 endfunc
 nnoremap <C-i> :call NumberToggle()<cr>
 
-" Indent settings
-set ts=2 sw=2 et
-let g:indent_guides_start_level = 2
-let g:indent_guides_guide_size = 1
-let g:indent_guides_auto_colors = 0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=white   ctermbg=white
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=lightgrey ctermbg=lightgrey
 
 " Vim pencil specifc plugins
 augroup pencil
@@ -587,11 +537,6 @@ nnoremap <silent> Q gqip
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-let g:ycm_key_list_select_completion=[]
-let g:ycm_key_list_previous_completion=[]
-
-" Uses the prettier js library to format js and jsx files
-" autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
 
 let g:UltiSnipsExpandTrigger       = '<c-t>'
 let g:UltiSnipsJumpForwardTrigger  = '<c-j>'

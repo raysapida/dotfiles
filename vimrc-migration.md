@@ -37,6 +37,53 @@
 
 ---
 
+## General Cleanup — vimrc + tmux.conf
+
+### 7. Remove dead vim-plug bootstrap comment blocks (vimrc)
+- [x] Removed old commented-out vim/nvim-specific plug.vim bootstrap variants (lines 11–29)
+- **Why:** Dead code carried over from years of vim → nvim migration. Only one bootstrap block is needed; the active one using `stdpath('data')` already handles both vim and nvim.
+
+### 8. Remove CtrlP and its ag integration (vimrc)
+- [x] Removed `ctrlpvim/ctrlp.vim` plugin
+- [x] Removed `g:ctrlp_map`, `g:ctrlp_cmd`, `g:ctrlp_user_command`, `g:ctrlp_use_caching` config
+- **Why:** Telescope now covers all CtrlP use cases (file finding, buffer switching). Keeping both is redundant. The ag-in-CtrlP integration config was also removed since CtrlP is gone; the `Ag` command and `\` keymap were kept since they use ag.vim directly.
+
+### 9. Remove duplicate indent plugins (vimrc)
+- [x] Removed `nathanaelkane/vim-indent-guides` plugin and its config block (`indent_guides_start_level`, `indent_guides_guide_size`, `indent_guides_auto_colors`, highlight autocmds)
+- [x] Kept `Yggdroot/indentLine` (no config needed, works out of the box)
+- **Why:** Both plugins display indent levels and conflict. `indentLine` is more actively maintained for nvim and requires no config.
+
+### 10. Remove duplicate CSV plugin (vimrc)
+- [x] Removed `chrisbra/csv.vim`
+- [x] Kept `hat0uma/csvview.nvim` (already configured via `lua require('csvview').setup()`)
+- **Why:** Both handle CSV files. `csvview.nvim` is the lua-native plugin already wired up; `csv.vim` was redundant.
+
+### 11. Remove dead YCM config (vimrc)
+- [x] Removed `g:ycm_key_list_select_completion` and `g:ycm_key_list_previous_completion`
+- **Why:** YouCompleteMe is not installed and never was in this config. These settings were leftover from a copy-paste and had no effect.
+
+### 12. Fix duplicate limelight assignment (vimrc)
+- [x] Removed `let g:limelight_conceal_ctermfg = 'gray'` (immediately overridden by `= 240` on the next line)
+- **Why:** The string form was set then immediately overwritten by the numeric form. The string form was dead.
+
+### 13. Remove redundant `filetype indent on` (vimrc)
+- [x] Removed `filetype indent on` (line 278)
+- **Why:** `filetype plugin indent on` (line 276) is a superset — it enables filetype detection, plugin loading, and indent rules. The plain `filetype indent on` was redundant.
+
+### 14. Remove duplicate plain pane navigation bindings (tmux.conf)
+- [x] Removed `bind-key -n C-h/j/k/l select-pane` block (the plain version)
+- **Why:** These were overridden further down by vim-aware versions using `if-shell` to check if the current pane is running vim/nvim. The plain bindings were unreachable dead code.
+
+### 15. Update default-terminal to tmux-256color (tmux.conf)
+- [x] Changed `screen-256color` → `tmux-256color`
+- **Why:** On M1 Mac with modern terminals (iTerm2, Ghostty, Kitty), `tmux-256color` enables proper true color (24-bit) support. `screen-256color` caps at 256 colors and can cause color rendering issues in nvim themes.
+
+### 16. Fix wiki binding (tmux.conf)
+- [x] Changed `bind-key w split-window -h -c ~/code/wiki "vim +:NERDTree"` → `"nvim"` with `$HOME/code/wiki`
+- **Why:** Used the old `vim` binary instead of `nvim`. Also tilde expansion is unreliable inside tmux `bind-key` — `$HOME` is safer. NERDTree was removed since it's not in the plugin list.
+
+---
+
 ## Lessons Learned
 
 ### nvim-cmp migration
