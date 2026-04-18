@@ -82,12 +82,23 @@
 - [x] Changed `bind-key w split-window -h -c ~/code/wiki "vim +:NERDTree"` → `"nvim"` with `$HOME/code/wiki`
 - **Why:** Used the old `vim` binary instead of `nvim`. Also tilde expansion is unreliable inside tmux `bind-key` — `$HOME` is safer. NERDTree was removed since it's not in the plugin list.
 
+### 17. Remove UltiSnips (vimrc)
+- [x] Removed `SirVer/ultisnips` and `honza/vim-snippets` plugins
+- [x] Removed `g:UltiSnipsEditSplit`, `g:UltiSnipsExpandTrigger`, `g:UltiSnipsJumpForwardTrigger`, `g:UltiSnipsJumpBackwardTrigger`
+- **Why:** UltiSnips relies on the Python provider which shifts behavior across nvim minor versions. Not worth maintaining for infrequent snippet use. Re-add later with `lazy.nvim` if needed — the ecosystem will be cleaner by then.
+- **To restore:** Install `lazy.nvim`, add `L3MON4D3/LuaSnip` (lua-native, no Python dependency) with `rafamadriz/friendly-snippets` for the snippet collection.
+
+### 18. Fix missing pyright for Python LSP (post-upgrade)
+- [x] Run `npm install -g pyright` after upgrading nvim
+- **Why:** `nvim-lspconfig` is configured to use `pyright-langserver` for Python files but the binary isn't installed. This causes a warning when opening `.py` files: `Spawning language server with cmd: { "pyright-langserver", "--stdio" } failed`. nvim still opens Python files — only LSP features (autocomplete, go-to-definition) are missing.
+- **Not fixed by nvim upgrade** — it's a missing binary, not a nvim bug. Safe to upgrade first and fix after.
+
 ---
 
 ## Lessons Learned
 
 ### nvim-cmp migration
-- `quangnguyen30192/cmp-nvim-ultisnips` is broken on nvim 0.9+ — calling `UltiSnips#SnippetsInCurrentScope` returns userdata instead of a table. No well-maintained replacement exists. UltiSnips still works via its own expand trigger (`<C-t>`), snippets just won't appear in the cmp popup.
+- `quangnguyen30192/cmp-nvim-ultisnips` is broken on nvim 0.9+ — calling `UltiSnips#SnippetsInCurrentScope` returns userdata instead of a table. No well-maintained replacement exists. Removed UltiSnips entirely; re-add with `LuaSnip` when snippets are needed again.
 - `nvim --headless "+PlugInstall"` will error on lua blocks that `require` the plugins being installed — this is expected. The error is transient; check `ls ~/.local/share/nvim/plugged/` to confirm plugins installed, then verify with a plain `nvim --headless "+qa"`.
 - deoplete and ncm2 both needed `pynvim` via a Python host. After removing them, `g:python3_host_prog` and the nvim venv are no longer needed.
 

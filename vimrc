@@ -91,12 +91,6 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'christoomey/vim-tmux-runner'
 Plug 'keith/tmux.vim'
 
-" Plugins to allow snippets
-" Plugin 'MarcWeber/vim-addon-mw-utils'
-" Plugin 'tomtom/tlib_vim'
-" Plugin 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
-Plug 'SirVer/ultisnips'
 
 
 " Plugins for changing the themes
@@ -537,10 +531,6 @@ nnoremap <silent> Q gqip
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-
-let g:UltiSnipsExpandTrigger       = '<c-t>'
-let g:UltiSnipsJumpForwardTrigger  = '<c-j>'
-let g:UltiSnipsJumpBackwardTrigger = '<c-a>'
 
 set completeopt=menu,menuone,noselect
 
