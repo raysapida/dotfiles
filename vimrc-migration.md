@@ -93,6 +93,26 @@
 - **Why:** `nvim-lspconfig` is configured to use `pyright-langserver` for Python files but the binary isn't installed. This causes a warning when opening `.py` files: `Spawning language server with cmd: { "pyright-langserver", "--stdio" } failed`. nvim still opens Python files — only LSP features (autocomplete, go-to-definition) are missing.
 - **Not fixed by nvim upgrade** — it's a missing binary, not a nvim bug. Safe to upgrade first and fix after.
 
+### 19. Migrate vim-plug to lazy.nvim
+- [x] Removed vim-plug bootstrap and all `Plug` declarations
+- [x] Added lazy.nvim bootstrap using `vim.uv.fs_stat` (nvim 0.10+ API, replaces deprecated `vim.loop`)
+- [x] Converted all plugins to lazy.nvim spec with `ft =` lazy loading for language-specific plugins
+- [x] Removed dead UltiSnips-dependent snippet plugins (`vim-react-snippets`, `vim-react-native-snippets`, `vim-javascript-snippets`)
+- [x] Removed duplicate `let mapleader` — now set via `vim.g.mapleader` before `lazy.setup()`
+- **Why:** lazy.nvim lazy-loads language plugins by filetype, cutting startup time for non-language files. Lockfile (`lazy-lock.json`) pins exact plugin versions for reproducible installs across machines.
+- **Key difference from vim-plug:** `build =` replaces `do:`, `branch =` replaces `{'branch': '...'}`, `ft =` replaces `{'for': '...'}`, `cmd =` lazy-loads on a command.
+
+### 20. Fix deprecated lspconfig API (nvim-lspconfig v2+)
+- [x] Replaced `require('lspconfig').server.setup({})` with `vim.lsp.config('server', {})` + `vim.lsp.enable('server')` in both vimrc and `init.lua`
+- [x] Discovered `init.lua` had its own lspconfig calls including `ts_ls` (TypeScript) not in vimrc — preserved and migrated
+- **Why:** nvim-lspconfig v2 deprecated the `require('lspconfig')` framework in favor of nvim's built-in `vim.lsp.config`. Will be removed in v3.0.0.
+
+### 21. Fix gruvbox not loading with lazy.nvim
+- [x] Added `lazy = false` and `priority = 1000` to gruvbox plugin spec
+- [x] Added `config` function that sets `vim.o.background = "dark"` and calls `vim.cmd.colorscheme("gruvbox")`
+- [x] Fixed `set background=light` → `set background=dark` (was overriding thematic's dark default)
+- **Why:** lazy.nvim defers plugin loading by default. Colorscheme plugins must set `priority = 1000` and `lazy = false` to load before all other plugins, otherwise the theme isn't applied on startup.
+
 ---
 
 ## Lessons Learned

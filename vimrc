@@ -1,215 +1,166 @@
 set nocompatible
-filetype off
 let &t_Co=256
 
-let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
-if empty(glob(data_dir . '/autoload/plug.vim'))
-  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
+lua << EOF
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
-call plug#begin()
+vim.g.mapleader = " "
 
+require("lazy").setup({
+  -- ======================================================================
+  -- General
+  "mhinz/vim-startify",
+  "tpope/vim-eunuch",
+  "tpope/vim-fugitive",
+  "tpope/vim-repeat",
+  "tpope/vim-surround",
+  "tpope/vim-vinegar",
+  "tpope/vim-commentary",
+  "tpope/vim-obsession",
+  "pbrisbin/vim-mkdir",
+  "wellle/targets.vim",
+  "christoomey/vim-sort-motion",
+  "christoomey/vim-system-copy",
+  "christoomey/vim-tmux-navigator",
+  "christoomey/vim-tmux-runner",
+  "keith/tmux.vim",
+  "rking/ag.vim",
+  "junegunn/vim-easy-align",
+  "junegunn/vim-peekaboo",
+  "yuttie/comfortable-motion.vim",
+  "Townk/vim-autoclose",
+  "easymotion/vim-easymotion",
+  { "mg979/vim-visual-multi", branch = "master" },
 
-" ========================================================================================
-" General VIM plugins
+  -- Completion
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
+  },
 
-" Start screen plugins showing recent buffers
-Plug 'mhinz/vim-startify'
+  -- Fuzzy finding
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
 
-" Wrapper for UNIX command
-Plug 'tpope/vim-eunuch'
+  -- LSP + DAP
+  "neovim/nvim-lspconfig",
+  "mfussenegger/nvim-dap",
+  { "mfussenegger/nvim-dap-python", ft = "python" },
 
-" Wrapper to allow git commands in vim
-Plug 'tpope/vim-fugitive'
+  -- Themes + statusline
+  "vim-airline/vim-airline",
+  "vim-airline/vim-airline-themes",
+  "edkolev/tmuxline.vim",
+  "reedes/vim-thematic",
+  "flazz/vim-colorschemes",
+  "jacoborus/tender.vim",
+  "daylerees/colour-schemes",
+  {
+    "morhetz/gruvbox",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.o.background = "dark"
+      vim.cmd.colorscheme("gruvbox")
+    end,
+  },
 
-" Using . command with Plugins
-Plug 'tpope/vim-repeat'
+  -- Tags
+  { "majutsushi/tagbar", cmd = "TagbarToggle" },
 
-" Mappings to easily delete, change and add such surroundings in pairs.
-Plug 'tpope/vim-surround'
+  -- Writing / focus
+  { "reedes/vim-pencil", ft = { "markdown", "text" } },
+  { "reedes/vim-lexical", ft = { "markdown", "text" } },
+  { "junegunn/goyo.vim", cmd = "Goyo" },
+  { "junegunn/limelight.vim", cmd = "Limelight" },
 
-" netrw enhancement
-Plug 'tpope/vim-vinegar'
+  -- CSV
+  { "hat0uma/csvview.nvim", ft = "csv" },
 
-" Plug 'github/copilot.vim'
+  -- ======================================================================
+  -- Language specific
 
-" Completion
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-path'
+  -- Ruby / Rails
+  { "thoughtbot/vim-rspec", ft = "ruby" },
+  { "tpope/vim-rails", ft = "ruby" },
+  { "slim-template/vim-slim", ft = "slim" },
+  { "kchmck/vim-coffee-script", ft = "coffee" },
 
-" Plug 'autozimu/LanguageClient-neovim', {
-"     \ 'branch': 'next',
-"     \ 'do': 'bash install.sh',
-"     \ }
+  -- JavaScript / TypeScript
+  { "pangloss/vim-javascript", ft = { "javascript", "javascriptreact" } },
+  { "othree/yajs.vim", ft = { "javascript", "javascriptreact" } },
+  { "isRuslan/vim-es6", ft = { "javascript", "javascriptreact" } },
+  { "mustache/vim-mustache-handlebars", ft = { "html", "mustache", "handlebars" } },
+  { "moll/vim-node", ft = { "javascript", "javascriptreact" } },
+  { "MaxMEllon/vim-jsx-pretty", ft = { "javascript", "javascriptreact" } },
+  { "nikvdp/ejs-syntax", ft = "ejs" },
+  { "prettier/vim-prettier", ft = { "javascript", "javascriptreact", "typescript", "typescriptreact", "css", "json" } },
+  { "leafgarland/typescript-vim", ft = { "typescript", "typescriptreact" } },
 
-" Fuzzy finding
-Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-lua/plenary.nvim'
+  -- Templates
+  { "lumiliet/vim-twig", ft = "twig" },
+  { "mattn/emmet-vim", ft = { "html", "css", "javascript", "javascriptreact", "typescriptreact" } },
+  { "tpope/vim-haml", ft = { "haml", "sass" } },
+  { "digitaltoad/vim-pug", ft = "pug" },
 
-" Allows vim to make dir when creating a new file
-Plug 'pbrisbin/vim-mkdir'
+  -- CSS
+  { "ap/vim-css-color", ft = { "css", "scss", "sass", "html" } },
 
-" Navigation inside a file
-Plug 'easymotion/vim-easymotion'
+  -- Docker
+  { "ekalinin/Dockerfile.vim", ft = "dockerfile" },
 
-" Allow multiple cursors using ctrl n, ctrl p , ctrl x
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+  -- Other languages
+  { "elixir-lang/vim-elixir", ft = "elixir" },
+  { "tomlion/vim-solidity", ft = "solidity" },
+  { "justinmk/vim-syntax-extra", ft = { "c", "cpp" } },
+  { "udalov/kotlin-vim", ft = "kotlin" },
+  { "hashivim/vim-terraform", ft = { "terraform", "tf", "hcl" } },
 
-" Creates a closing pairing for parentheses, brackets, etc
-Plug 'Townk/vim-autoclose'
-
-" sort with gs
-Plug 'christoomey/vim-sort-motion'
-
-" Copy to system clipboard using cp
-Plug 'christoomey/vim-system-copy'
-
-" Commenting using gcc
-Plug 'tpope/vim-commentary'
-
-" Wrapper for the silver searcher
-Plug 'rking/ag.vim'
-
-" Continuously update session files
-Plug 'tpope/vim-obsession'
-
-" Add additional targets for motions
-Plug 'wellle/targets.vim'
-
-" Easy to use alignment
-" https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
-
-" Plugin to view the values of the registers
-Plug 'junegunn/vim-peekaboo'
-
-" Vim/tmux integration
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'christoomey/vim-tmux-runner'
-Plug 'keith/tmux.vim'
-
-
-
-" Plugins for changing the themes
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'edkolev/tmuxline.vim'
-Plug 'reedes/vim-thematic'
-Plug 'flazz/vim-colorschemes'
-Plug 'morhetz/gruvbox'
-Plug 'jacoborus/tender.vim'
-Plug 'daylerees/colour-schemes'
-
-Plug 'yuttie/comfortable-motion.vim'
-
-" Ctags plugin to show all tags in a file
-Plug 'majutsushi/tagbar'
-
-
-" ========================================================================================
-" Language specific plugins
-
-" Ruby / Rails specific plugins
-Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
-Plug 'tpope/vim-rails', { 'for': 'ruby' }
-" Plug 'tpope/vim-bundler', { 'for': 'ruby' }
-Plug 'slim-template/vim-slim'
-Plug 'kchmck/vim-coffee-script'
-
-" Javascript related Plugins
-Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plug 'othree/yajs.vim', { 'for': 'javascript' }
-Plug 'isRuslan/vim-es6', { 'for': 'javascript' }
-Plug 'mustache/vim-mustache-handlebars', { 'for': 'javascript' }
-" Plug 'kchmck/vim-coffee-script', { 'for': 'javascript' }
-Plug 'moll/vim-node', { 'for': 'javascript' }
-Plug 'MaxMEllon/vim-jsx-pretty', { 'for': 'javascript' }
-
-Plug 'justinj/vim-react-snippets', { 'for': 'javascript' }
-Plug 'nikvdp/ejs-syntax', { 'for': 'javascript' }
-Plug 'prettier/vim-prettier', { 'for': 'javascript' }
-Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
-Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
-Plug 'leafgarland/typescript-vim'
-
-Plug 'lumiliet/vim-twig'
-
-Plug 'mattn/emmet-vim'
-
-" Markdown specific plugins
-Plug 'godlygeek/tabular', { 'for': 'markdown' }
-Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-
-" CSS specific Plugins
-Plug 'ap/vim-css-color'
-
-" Docker specific Plugins
-Plug 'ekalinin/Dockerfile.vim'
-
-" Python specific plugins
-" Plug 'klen/python-mode', { 'for': 'python' }
-" Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
-" Plug 'jupyter-vim/jupyter-vim'
-
-" Templating specific plugins
-Plug 'tpope/vim-haml'
-Plug 'digitaltoad/vim-pug'
-
-" Elixir specific plugins
-Plug 'elixir-lang/vim-elixir'
-
-" Solidity / Ethereum specific plugins
-Plug 'tomlion/vim-solidity'
-
-" C Specific Plugins
-Plug 'justinmk/vim-syntax-extra'
-
-" Kotlin Specific Plugins
-Plug 'udalov/kotlin-vim'
-
-" Writing specific plugins
-Plug 'reedes/vim-pencil'
-Plug 'reedes/vim-lexical'
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
-
-" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-
-" Plug 'w0rp/ale'
-" Plug 'skywind3000/asyncrun.vim'
-
-" Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-
-Plug 'hashivim/vim-terraform'
-
-Plug 'hat0uma/csvview.nvim'
-
-Plug 'neovim/nvim-lspconfig'
-
-Plug 'mfussenegger/nvim-dap'
-Plug 'mfussenegger/nvim-dap-python'
-
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-
-
-
-call plug#end()
+  -- Markdown
+  { "godlygeek/tabular", ft = "markdown" },
+  { "plasticboy/vim-markdown", ft = "markdown" },
+  {
+    "iamcco/markdown-preview.nvim",
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+}, {
+  ui = { border = "rounded" },
+})
+EOF
 
 lua << EOF
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-require('lspconfig').pyright.setup({ capabilities = capabilities })
+vim.lsp.config('pyright', { capabilities = capabilities })
+vim.lsp.enable('pyright')
+
 require("dap-python").setup("/opt/homebrew/bin/python3")
-require('lspconfig').ruby_lsp.setup({
+
+vim.lsp.config('ruby_lsp', {
   capabilities = capabilities,
   init_options = {
     formatter = 'standard',
     linters = { 'standard' },
   },
 })
+vim.lsp.enable('ruby_lsp')
 
 require('telescope').setup({
   defaults = {
@@ -245,8 +196,6 @@ filetype plugin indent on
 
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
-" Leader
-let mapleader = " "
 
 set foldlevel=99
 set foldmethod=indent
@@ -261,8 +210,7 @@ set incsearch     " do incremental searching
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
 set relativenumber
-" set background=light
-set background=light
+set background=dark
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
