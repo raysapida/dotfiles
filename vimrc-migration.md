@@ -70,6 +70,13 @@
 - [x] Removed `filetype indent on` (line 278)
 - **Why:** `filetype plugin indent on` (line 276) is a superset — it enables filetype detection, plugin loading, and indent rules. The plain `filetype indent on` was redundant.
 
+### 23. Fix black bars in tmux status bar from egel/tmux-gruvbox conflict
+- [x] Removed hardcoded `set -g status-style`, `setw -g window-status-format`, `setw -g window-status-current-format`, `setw -g window-status-current-style`, `setw -g window-status-style`, `set -g message-style`, `set -g message-command-style`
+- [x] Removed `set -g status-left ''` (plugin sets its own)
+- [x] Stripped `#[fg=colour...]`/`#[bg=colour...]` codes from `status-right` — kept spotify, battery, date content
+- **Why:** `egel/tmux-gruvbox` sets all status bar colors. Hardcoded color codes created black gaps (colour0/colour234) between the session name, window tabs, and date sections because they overrode the plugin's palette.
+- **How to apply:** Let the plugin own all color settings. Only set `status-right` content without inline color codes.
+
 ### 14. Remove duplicate plain pane navigation bindings (tmux.conf)
 - [x] Removed `bind-key -n C-h/j/k/l select-pane` block (the plain version)
 - **Why:** These were overridden further down by vim-aware versions using `if-shell` to check if the current pane is running vim/nvim. The plain bindings were unreachable dead code.
