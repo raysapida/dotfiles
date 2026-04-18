@@ -1,0 +1,22 @@
+#!/bin/bash
+
+TMUX_SOCKET="/private/tmp/tmux-$(id -u)/default"
+if [ ! -S "$TMUX_SOCKET" ]; then
+  exit 0
+fi
+
+TMUX=("/opt/homebrew/bin/tmux" "-S" "$TMUX_SOCKET")
+
+if ! "${TMUX[@]}" list-sessions &>/dev/null; then
+  exit 0
+fi
+
+appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+
+if [ "$appearance" = "Dark" ]; then
+  "${TMUX[@]}" set -g @tmux-gruvbox 'dark'
+else
+  "${TMUX[@]}" set -g @tmux-gruvbox 'light'
+fi
+
+"${TMUX[@]}" source-file ~/.tmux.conf

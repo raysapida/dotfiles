@@ -66,7 +66,6 @@ require("lazy").setup({
   -- Themes + statusline
   "vim-airline/vim-airline",
   "vim-airline/vim-airline-themes",
-  "edkolev/tmuxline.vim",
   "reedes/vim-thematic",
   "flazz/vim-colorschemes",
   "jacoborus/tender.vim",
@@ -320,6 +319,9 @@ lua << EOF
 local function sync_macos_appearance()
   local appearance = vim.fn.system("defaults read -g AppleInterfaceStyle 2>/dev/null"):gsub("%s+", "")
   vim.o.background = appearance == "Dark" and "dark" or "light"
+  if vim.env.TMUX then
+    vim.fn.jobstart("sync-theme")
+  end
 end
 
 sync_macos_appearance()
@@ -426,7 +428,7 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-let g:airline_theme = 'tender'
+let g:airline_theme = 'gruvbox'
 let g:airline_powerline_fonts = 1
 " let g:airline_left_sep = '»'
 " let g:airline_left_sep = '▶'
@@ -449,23 +451,6 @@ let g:airline_powerline_fonts = 1
 " let g:airline_symbols.notexists = '∄'
 " let g:airline_symbols.whitespace = 'Ξ'
 
-" Manage tmux line so that the windows dont overflow to each other
-let g:tmuxline_powerline_separators = 1
-" let g:tmuxline_separators = {
-"     \ 'left' : '▶',
-"     \ 'left_alt': '>',
-"     \ 'right' : '◀',
-"     \ 'right_alt' : '<',
-"     \ 'space' : ' '}
-
-let g:tmuxline_preset = {
-      \'a'    : '#S',
-      \'b'    : ['#(tmux-spotify-info)'],
-      \'win'  : '#I #W',
-      \'cwin' : '#I #W',
-      \'x'    : '%a %b %d',
-      \'y'    : '%I:%M %p',
-      \'z'    : '#(~/bin/battery Discharging) - #h'}
 
 " Relative / Absolute line numbers toggle
 nnoremap <Leader>bg :lua vim.o.background = vim.o.background == "dark" and "light" or "dark"<CR>
