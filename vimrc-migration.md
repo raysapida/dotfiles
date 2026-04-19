@@ -152,6 +152,66 @@
 
 ---
 
+## Recommended Next Steps
+
+### vimrc
+
+#### 24. Remove vim-thematic and its config
+- Remove `reedes/vim-thematic` plugin and all `g:thematic#theme_name`, `g:thematic#defaults`, `g:thematic#themes` config blocks
+- **Why:** Thematic was a multi-theme switcher. gruvbox dark/light toggling is now handled by `sync_macos_appearance()` + `<Leader>bg`. Thematic adds dead weight and its `airline-theme: 'serene'` default conflicts with the `gruvbox` airline theme.
+
+#### 25. Remove dead UltiSnips config remnant (vimrc)
+- Remove `let g:UltiSnipsEditSplit="vertical"` (line ~481)
+- **Why:** UltiSnips was removed in item 17. This setting is now dead code.
+
+#### 26. Consolidate duplicate JavaScript syntax plugins
+- Remove `othree/yajs.vim` and `isRuslan/vim-es6` — keep `pangloss/vim-javascript`
+- **Why:** All three provide JS syntax highlighting. `pangloss/vim-javascript` is actively maintained and most compatible with tree-sitter. `yajs` and `vim-es6` are largely unmaintained and conflict with it.
+- **Alternative:** Replace all three with `nvim-treesitter` for JS/TS syntax — more accurate, maintained, and used by the modern nvim ecosystem.
+
+#### 27. Remove unused colorscheme bundles
+- Remove `flazz/vim-colorschemes`, `daylerees/colour-schemes`, `jacoborus/tender.vim`
+- **Why:** gruvbox is the active colorscheme. These are large bundles (hundreds of themes each) that slow lazy.nvim sync with no benefit.
+
+#### 28. Move nvim-dap-python setup inside ft=python lazy load
+- Move `require("dap-python").setup(...)` into the `nvim-dap-python` plugin spec's `config` function
+- **Why:** Currently the setup call runs at startup for all files even though the plugin has `ft = "python"`. Defeats the lazy loading.
+
+#### 29. Replace Townk/vim-autoclose with nvim-autopairs
+- Swap `Townk/vim-autoclose` for `windwp/nvim-autopairs`
+- **Why:** `vim-autoclose` is unmaintained and has edge cases with nvim-cmp. `nvim-autopairs` integrates directly with nvim-cmp (auto-confirms on `<CR>`) and is lua-native.
+
+---
+
+### zshrc
+
+#### 30. Fix `en` alias to point to init.lua (zshrc)
+- Change `alias en='nvim ~/.config/nvim/init.vim'` → `alias en='nvim ~/.config/nvim/init.lua'`
+- **Why:** init.vim no longer exists — the config was migrated to init.lua.
+
+#### 31. Fix Intel-era Python/Android paths (zshrc)
+- Change `VIRTUALENV_PYTHON` and `VIRTUALENVWRAPPER_PYTHON` from `/usr/local/bin/python3` → `/opt/homebrew/bin/python3`
+- Change `ANDROID_SDK_ROOT` and `ANDROID_HOME` from `/usr/local/share/android-sdk` → `/opt/homebrew/share/android-sdk` (or remove if Android dev is inactive)
+- **Why:** `/usr/local` is the Intel Homebrew prefix. On M1 Homebrew installs to `/opt/homebrew`. These paths silently fail on this machine.
+
+#### 32. Fix hardcoded CLOUDSDK_PYTHON version (zshrc)
+- Change `export CLOUDSDK_PYTHON=/opt/homebrew/bin/python3.11` → `/opt/homebrew/bin/python3`
+- **Why:** Hardcoded minor version breaks when Python is upgraded via Homebrew (e.g., 3.11 → 3.12).
+
+#### 33. Remove Linux-only alert alias (zshrc)
+- Remove `alias alert='notify-send ...'`
+- **Why:** `notify-send` is a Linux desktop notification tool. Not available on macOS — the alias silently does nothing here.
+
+#### 34. Remove large oh-my-zsh template comment block at top of zshrc (lines 11–78)
+- Remove the block of commented-out oh-my-zsh configuration options (`CASE_SENSITIVE`, `DISABLE_AUTO_UPDATE`, `UPDATE_ZSH_DAYS`, etc.)
+- **Why:** Dead copy-paste from the oh-my-zsh template. antigen is used here, not oh-my-zsh directly. These options have no effect.
+
+#### 35. Remove orphaned plugins= line (zshrc)
+- Remove `plugins=(git rails yarn docker)` near the bottom of the file
+- **Why:** This sets the oh-my-zsh `$plugins` variable, but oh-my-zsh is loaded via antigen (`antigen use oh-my-zsh`) which reads this variable only if set *before* `antigen apply`. It appears after `antigen apply`, so it's dead.
+
+---
+
 ## Completed
 
 - [x] Fix hardcoded `/usr/local/bin/python` path for nvim-dap-python → `/opt/homebrew/bin/python3`
