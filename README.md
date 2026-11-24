@@ -75,6 +75,13 @@ Bundler and `rdbg` are available with Ruby 4.0.10. Older runtimes can stay
 installed for projects that pin them. Use a project-local mise configuration
 for a Node 22 override.
 
+### Unison
+
+The Brewfile installs Unison. The shared Zsh function `ub` finds the nearest
+directory, starting at the current directory and walking up, with a matching
+`~/.unison/<directory>.prf`. It runs that profile in batch mode and forwards
+any arguments you pass. Keep the profiles local to each Mac.
+
 ### Python tooling
 
 Mise pins the `uv` executable. Homebrew provides `python3` in the shell,

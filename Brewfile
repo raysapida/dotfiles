@@ -7,6 +7,7 @@ brew "the_silver_searcher"
 brew "fzf"
 brew "jq"
 brew "gh"
+brew "unison"
 brew "urlview"
 brew "extract_url"
 

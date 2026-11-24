@@ -337,7 +337,7 @@ fi
 # ub — Unison batch sync for the current workspace.
 # Walks up from $PWD looking for a directory whose name matches a profile in
 # ~/.unison (e.g. inside ~/work/example-project/pipeline it finds ~/.unison/example-project.prf and
-# runs `unison lemur -batch`). Extra args are passed through to unison.
+# runs `unison example-project -batch`). Extra args are passed through to unison.
 ub() {
   local dir=$PWD profile
   while [[ -n $dir && $dir != / ]]; do
