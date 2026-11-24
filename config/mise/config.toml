@@ -1,8 +1,10 @@
 [tools]
 erlang = "latest"
 kotlin = { version = "latest", asset_pattern = "kotlin-compiler-*.zip", bin_path = "kotlinc/bin" }
-node = "22"
-ruby = "3.4.4"
+node = "26.13.1"
+ruby = "4.0.10"
+"npm:prettier" = "3.8.3"
+"npm:pyright" = "1.1.413"
 rust = "latest"
 elixir = "latest"
 gradle = "latest"

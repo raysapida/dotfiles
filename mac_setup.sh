@@ -43,12 +43,10 @@ fi
 
 # Installs the versions pinned in ~/.config/mise/config.toml. New Ruby versions
 # get ruby-lsp through ruby.default_packages_file.
-"$HOME/.local/bin/mise" install
+"$HOME/.local/bin/mise" -C "$HOME" install
 
-# Node package-manager shims are setup work, not shell-startup work.
-if "$HOME/.local/bin/mise" which corepack >/dev/null 2>&1; then
-  "$HOME/.local/bin/mise" exec -- corepack enable
-fi
+# Provision TypeScript LSP and Corepack in the default Node installation.
+"$dotfiles_dir/bin/install-node-tools"
 
 # Belt and braces: ensure ruby-lsp exists in every ruby already installed,
 # in case the hook did not fire (e.g. a ruby installed before this config).

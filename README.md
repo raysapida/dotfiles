@@ -51,6 +51,30 @@ shared pins on an existing Mac, back up your local lockfile, copy
 intentional plugin update, test it locally before copying the revised lockfile
 back into the repository.
 
+### Node and Ruby tooling
+
+The shared mise defaults are Node `26.13.1` and Ruby `4.0.10`.
+After updating an existing checkout, install the pinned runtimes and CLI tools
+from the repository root:
+
+```sh
+mise -C "$HOME" install node ruby npm:prettier npm:pyright
+bin/install-node-tools
+bin/install-ruby-lsp 4.0.10
+```
+
+The Node setup installs TypeScript 6 beside `typescript-language-server` for
+Neovim's `ts_ls`. It also installs standalone Corepack and enables the Yarn and
+pnpm shims so projects can use their declared package manager versions. Pyright
+and Prettier are separate mise tools. Keep each project's compiler and formatter
+in its own dependencies when the project specifies them.
+
+Ruby LSP runs under the version selected by each project's `.ruby-version`.
+Keep `standard` in a project's Gemfile when using it for Ruby LSP formatting.
+Bundler and `rdbg` are available with Ruby 4.0.10. Older runtimes can stay
+installed for projects that pin them. Use a project-local mise configuration
+for a Node 22 override.
+
 ### Shared Git defaults
 
 To opt in, add this include to `~/.gitconfig`. Put any local overrides after
