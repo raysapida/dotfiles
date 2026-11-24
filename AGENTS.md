@@ -1,10 +1,19 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for contributors and coding agents working in this repository.
 
 ## Overview
 
 This is a personal dotfiles repository managed with [rcm](https://github.com/thoughtbot/rcm). Files here are symlinked into `$HOME` using `rcup`. `$HOME/.dotfiles` is the stable entry point and can itself be a symlink to this checkout. Credentials and machine-specific overrides belong in `~/.zshrc.local`, sourced last.
+
+## Commit privacy
+
+This repository is public. Treat every commit, including its message and author and committer metadata, as publishable.
+
+- Use the GitHub no-reply address for both Git identities. Check `git var GIT_AUTHOR_IDENT` and `git var GIT_COMMITTER_IDENT` before committing, and verify the recorded addresses with `git log -1 --format='%ae%n%ce'`. Never use a work email here.
+- Keep work project and client names, internal URLs and paths, PR and plan references, agent session IDs, and project handoff notes out of tracked files and commit messages. Use fictional examples. The personal knowledge base endpoint may be documented.
+- Keep credentials, local permissions, and machine-specific overrides outside tracked files. Use `~/.zshrc.local` for shell secrets and overrides. Keep project handoff notes local.
+- Before committing, inspect `git diff --cached`, including added filenames and vendored files. Before pushing or opening a PR, review the contents, messages, and identities of every commit being published, including changes removed by later commits. If unpublished history contains private material, rebuild the public branch from a clean base before pushing.
 
 ## Setup / Installation
 
