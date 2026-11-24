@@ -3,13 +3,10 @@ let &t_Co=256
 
 let mapleader = " "
 let s:nvim_config = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/config/nvim'
-lua << EOF
-local config = vim.fn.eval('s:nvim_config')
-vim.opt.rtp:prepend(config)
-require('dotfiles.plugins')
--- lazy.nvim resets runtimepath during setup.
-vim.opt.rtp:prepend(config)
-EOF
+execute 'lua vim.opt.rtp:prepend(' . json_encode(s:nvim_config) . ')'
+lua require('dotfiles.plugins')
+" lazy.nvim resets runtimepath during setup.
+execute 'lua vim.opt.rtp:prepend(' . json_encode(s:nvim_config) . ')'
 
 lua require('dotfiles.lsp')
 
