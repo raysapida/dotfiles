@@ -93,6 +93,8 @@ your own ignore file and keep that setting after the include to retain it.
 Check the effective paths with
 `git config --show-origin --get core.excludesFile`.
 
+For optional [Rectangle, iTerm2, and Ghostty setup](docs/desktop/README.md), follow the desktop checklist on each Mac.
+
 ## Local settings
 
 Personal agent skills live in `skills/`. Each tool's existing skill entry
