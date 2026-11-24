@@ -9,3 +9,9 @@ brew "jq"
 brew "gh"
 brew "urlview"
 brew "extract_url"
+
+# Terminal apps
+brew "btop"
+brew "yazi"
+brew "lazygit"
+brew "lazydocker"
