@@ -6,6 +6,13 @@ vim.lsp.enable('pyright')
 require("dap-python").setup("/opt/homebrew/bin/python3")
 
 vim.lsp.config('ruby_lsp', {
+  root_dir = function(bufnr, on_dir)
+    -- Keep Ruby highlighting for Homebrew's DSL without starting Ruby LSP.
+    if vim.fs.basename(vim.api.nvim_buf_get_name(bufnr)) == 'Brewfile' then
+      return
+    end
+    on_dir(vim.fs.root(bufnr, vim.lsp.config.ruby_lsp.root_markers))
+  end,
   -- Start through mise from the project root so ruby-lsp runs under the
   -- project's .ruby-version, not whatever ruby nvim's PATH had at launch.
   cmd = function(dispatchers, config)

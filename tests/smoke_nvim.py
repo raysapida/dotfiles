@@ -101,11 +101,26 @@ local ok, err = xpcall(function()
   assert(vim.fn.maparg(';', 'n') == ':Telescope buffers<CR>', 'Telescope mapping changed')
   assert(#vim.api.nvim_get_autocmds({ group = 'DotfilesEditor', event = 'VimResized' }) == 1,
     'resize autocommand missing')
-  -- Verify filetype behavior without starting a real language server.
-  vim.lsp.enable('ruby_lsp', false)
+  -- Observe real attachment decisions without launching the language server.
+  local ruby_starts = 0
+  local lsp_start = vim.lsp.start
+  vim.lsp.start = function(config, opts)
+    if config.name == 'ruby_lsp' then
+      ruby_starts = ruby_starts + 1
+      return
+    end
+    return lsp_start(config, opts)
+  end
+  vim.cmd.edit('Brewfile')
+  assert(vim.bo.filetype == 'ruby', 'Brewfile Ruby highlighting missing')
+  assert(not vim.wait(200, function() return ruby_starts > 0 end),
+    'Ruby LSP tried to start for Brewfile')
   vim.cmd.edit('Podfile')
   assert(vim.bo.filetype == 'ruby', 'Podfile Ruby filetype missing')
   assert(not vim.bo.formatoptions:match('[cro]'), 'comment continuation was enabled')
+  assert(vim.wait(1000, function() return ruby_starts > 0 end),
+    'Ruby LSP did not start for Podfile')
+  vim.lsp.start = lsp_start
   local plugins = require('lazy.core.config').plugins
   for _, name in ipairs({ 'lean.nvim', 'vim-gutentags', 'snacks.nvim', 'claudecode.nvim' }) do
     assert(plugins[name], name .. ' missing from plugin specification')
