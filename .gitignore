@@ -1,0 +1,16 @@
+# ctags index — regenerated on the fly by vim-gutentags
+tags
+tags.lock
+tags.temp
+
+# macOS
+.DS_Store
+
+# Machine-local Claude Code permissions
+.claude/settings.local.json
+
+# Python validation artifacts
+__pycache__/
+
+# Local project handoff notes
+/skills/opencode-handoff/lessons/

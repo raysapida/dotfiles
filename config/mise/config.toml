@@ -1,0 +1,17 @@
+[tools]
+erlang = "latest"
+kotlin = { version = "latest", asset_pattern = "kotlin-compiler-*.zip", bin_path = "kotlinc/bin" }
+node = "22"
+ruby = "3.4.4"
+rust = "latest"
+elixir = "latest"
+gradle = "latest"
+
+[settings]
+# Honor each project's .ruby-version (mise ignores it by default), so ruby,
+# bundler and ruby-lsp run the version the project's Gemfile expects.
+idiomatic_version_file_enable_tools = ["ruby"]
+# Every ruby mise installs gets the gems listed here (ruby-lsp for nvim).
+# ~/.default-gems is linked from ~/.dotfiles/default-gems. For rubies
+# installed before it existed, run ~/.dotfiles/bin/install-ruby-lsp.
+ruby.default_packages_file = "~/.default-gems"

@@ -1,230 +1,289 @@
 set nocompatible
-filetype off
 let &t_Co=256
 
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
+lua << EOF
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable",
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
 
-call plug#begin('~/.vim/plugged')
+vim.g.mapleader = " "
 
+require("lazy").setup({
+  -- ======================================================================
+  -- General
+  "mhinz/vim-startify",
+  "tpope/vim-eunuch",
+  "tpope/vim-fugitive",
+  "tpope/vim-repeat",
+  "tpope/vim-surround",
+  "tpope/vim-vinegar",
+  "tpope/vim-commentary",
+  "tpope/vim-obsession",
+  "pbrisbin/vim-mkdir",
+  "wellle/targets.vim",
+  "christoomey/vim-sort-motion",
+  "christoomey/vim-system-copy",
+  "christoomey/vim-tmux-navigator",
+  "christoomey/vim-tmux-runner",
+  "keith/tmux.vim",
+  "rking/ag.vim",
+  "junegunn/vim-easy-align",
+  "junegunn/vim-peekaboo",
+  "yuttie/comfortable-motion.vim",
+  "Townk/vim-autoclose",
+  "easymotion/vim-easymotion",
+  { "mg979/vim-visual-multi", branch = "master" },
 
-" ========================================================================================
-" General VIM plugins
+  -- Completion
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-buffer",
+      "hrsh7th/cmp-path",
+    },
+  },
 
-" Start screen plugins showing recent buffers
-Plug 'mhinz/vim-startify'
+  -- Fuzzy finding
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
 
-" Wrapper for UNIX command
-Plug 'tpope/vim-eunuch'
+  -- AI
+  { "folke/snacks.nvim", opts = {} },
+  {
+    "coder/claudecode.nvim",
+    dependencies = { "folke/snacks.nvim" },
+    cmd = {
+      "ClaudeCode", "ClaudeCodeFocus", "ClaudeCodeAdd",
+      "ClaudeCodeDiffAccept", "ClaudeCodeDiffDeny",
+    },
+  },
 
-" Wrapper to allow git commands in vim
-Plug 'tpope/vim-fugitive'
+  -- LSP + DAP
+  "neovim/nvim-lspconfig",
+  "mfussenegger/nvim-dap",
+  { "mfussenegger/nvim-dap-python", ft = "python" },
 
-" Using . command with Plugins
-Plug 'tpope/vim-repeat'
+  -- Themes + statusline
+  "vim-airline/vim-airline",
+  "vim-airline/vim-airline-themes",
+  "reedes/vim-thematic",
+  "flazz/vim-colorschemes",
+  "jacoborus/tender.vim",
+  "daylerees/colour-schemes",
+  {
+    "morhetz/gruvbox",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.cmd.colorscheme("gruvbox")
+    end,
+  },
 
-" Mappings to easily delete, change and add such surroundings in pairs.
-Plug 'tpope/vim-surround'
+  -- Tags
+  { "majutsushi/tagbar", cmd = "TagbarToggle" },
+  {
+    "ludovicchabant/vim-gutentags",
+    init = function()
+      vim.g.gutentags_ctags_executable = "ctags"
+      vim.g.gutentags_project_root = { ".git", "Gemfile", "Rakefile" }
+      vim.g.gutentags_ctags_extra_args = { "--tag-relative=yes", "--fields=+ailmnS" }
+      -- Index only git-tracked files (skips gitignored node_modules, venvs, Pods...).
+      -- Non-git roots (Gemfile/Rakefile only) fall back to ctags -R + ~/.ctags.d excludes.
+      vim.g.gutentags_file_list_command = { markers = { [".git"] = "git ls-files" } }
+    end,
+  },
 
-" netrw enhancement
-Plug 'tpope/vim-vinegar'
+  -- Writing / focus
+  { "reedes/vim-pencil", ft = { "markdown", "text" } },
+  { "reedes/vim-lexical", ft = { "markdown", "text" } },
+  { "junegunn/goyo.vim", cmd = "Goyo" },
+  { "junegunn/limelight.vim", cmd = "Limelight" },
 
-" A tree explorer plugin for vim.
-Plug 'preservim/nerdtree'
+  -- CSV
+  { "hat0uma/csvview.nvim", ft = "csv" },
 
-" Code completion using tab key
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'tbodt/deoplete-tabnine', { 'do': './install.sh' }
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
+  -- ======================================================================
+  -- Language specific
 
+  -- Ruby / Rails
+  { "thoughtbot/vim-rspec", ft = "ruby" },
+  { "tpope/vim-rails", ft = "ruby" },
+  { "slim-template/vim-slim", ft = "slim" },
+  { "kchmck/vim-coffee-script", ft = "coffee" },
 
-" Plug 'autozimu/LanguageClient-neovim', {
-"     \ 'branch': 'next',
-"     \ 'do': 'bash install.sh',
-"     \ }
+  -- JavaScript / TypeScript
+  { "pangloss/vim-javascript", ft = { "javascript", "javascriptreact" } },
+  { "othree/yajs.vim", ft = { "javascript", "javascriptreact" } },
+  { "isRuslan/vim-es6", ft = { "javascript", "javascriptreact" } },
+  { "mustache/vim-mustache-handlebars", ft = { "html", "mustache", "handlebars" } },
+  { "moll/vim-node", ft = { "javascript", "javascriptreact" } },
+  { "MaxMEllon/vim-jsx-pretty", ft = { "javascript", "javascriptreact" } },
+  { "nikvdp/ejs-syntax", ft = "ejs" },
+  { "prettier/vim-prettier", ft = { "javascript", "javascriptreact", "typescript", "typescriptreact", "css", "json" } },
+  { "leafgarland/typescript-vim", ft = { "typescript", "typescriptreact" } },
 
-" TODO: Choose one of these two to stick with
-" Fuzzy finding
-Plug 'Shougo/denite.nvim'
-" Full path fuzzy file, buffer, mru, tag, ... finder
-Plug 'ctrlpvim/ctrlp.vim'
+  -- Templates
+  { "lumiliet/vim-twig", ft = "twig" },
+  { "mattn/emmet-vim", ft = { "html", "css", "javascript", "javascriptreact", "typescriptreact" } },
+  { "tpope/vim-haml", ft = { "haml", "sass" } },
+  { "digitaltoad/vim-pug", ft = "pug" },
 
-" Allows vim to make dir when creating a new file
-Plug 'pbrisbin/vim-mkdir'
+  -- CSS
+  { "ap/vim-css-color", ft = { "css", "scss", "sass", "html" } },
 
-" Displays indent levels
-Plug 'nathanaelkane/vim-indent-guides'
+  -- Docker
+  { "ekalinin/Dockerfile.vim", ft = "dockerfile" },
 
-" Navigation inside a file
-Plug 'easymotion/vim-easymotion'
+  -- Other languages
+  { "elixir-lang/vim-elixir", ft = "elixir" },
+  { "tomlion/vim-solidity", ft = "solidity" },
+  { "justinmk/vim-syntax-extra", ft = { "c", "cpp" } },
+  { "udalov/kotlin-vim", ft = "kotlin" },
+  { "hashivim/vim-terraform", ft = { "terraform", "tf", "hcl" } },
+  { "Julian/lean.nvim", ft = "lean" },
 
-" Allow multiple cursors using ctrl n, ctrl p , ctrl x
-Plug 'mg979/vim-visual-multi', {'branch': 'master'}
+  -- Markdown
+  { "godlygeek/tabular", ft = "markdown" },
+  { "plasticboy/vim-markdown", ft = "markdown" },
+  {
+    "iamcco/markdown-preview.nvim",
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+}, {
+  ui = { border = "rounded" },
+})
+EOF
 
-" Creates a closing pairing for parentheses, brackets, etc
-Plug 'Townk/vim-autoclose'
+lua << EOF
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-" sort with gs
-Plug 'christoomey/vim-sort-motion'
+vim.lsp.config('pyright', { capabilities = capabilities })
+vim.lsp.enable('pyright')
 
-" Copy to system clipboard using cp
-Plug 'christoomey/vim-system-copy'
+require("dap-python").setup("/opt/homebrew/bin/python3")
 
-" Commenting using gcc
-Plug 'tpope/vim-commentary'
+vim.lsp.config('ruby_lsp', {
+  -- Start through mise from the project root so ruby-lsp runs under the
+  -- project's .ruby-version, not whatever ruby nvim's PATH had at launch.
+  cmd = function(dispatchers, config)
+    return vim.lsp.rpc.start({ 'mise', 'exec', '--', 'ruby-lsp' }, dispatchers, {
+      cwd = config.root_dir,
+    })
+  end,
+  capabilities = capabilities,
+  init_options = {
+    formatter = 'standard',
+    linters = { 'standard' },
+  },
+})
+vim.lsp.enable('ruby_lsp')
 
-" Wrapper for the silver searcher
-Plug 'rking/ag.vim'
+-- C / C++ (CRuby, and any project with a compile_commands.json)
+vim.lsp.config('clangd', {
+  capabilities = capabilities,
+  cmd = {
+    'clangd',
+    '--background-index',
+    '--header-insertion=never',
+    '--completion-style=detailed',
+    '--pch-storage=memory',
+    '--limit-results=200',
+    '-j=4',
+  },
+})
+vim.lsp.enable('clangd')
 
-" Continuously update session files
-Plug 'tpope/vim-obsession'
+-- Navigation mappings, active only in buffers with an LSP attached.
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(args)
+    local function map(lhs, rhs, desc)
+      vim.keymap.set('n', lhs, rhs, { buffer = args.buf, silent = true, desc = desc })
+    end
+    local tb = require('telescope.builtin')
 
-" Add additional targets for motions
-Plug 'wellle/targets.vim'
+    map('gd', tb.lsp_definitions, 'Go to definition')
+    map('gD', vim.lsp.buf.declaration, 'Go to declaration')
 
-" Easy to use alignment
-" https://github.com/junegunn/vim-easy-align
-Plug 'junegunn/vim-easy-align'
+    -- <leader>c... = "code" (also shared by Claude Code below): everything else is
+    -- taken by easymotion/rspec/telescope.
+    map('<leader>cr', tb.lsp_references, 'References')
+    map('<leader>cs', tb.lsp_document_symbols, 'Document symbols')
+    map('<leader>cS', tb.lsp_dynamic_workspace_symbols, 'Workspace symbols')
+    map('<leader>ci', tb.lsp_incoming_calls, 'Incoming calls (who calls this)')
+    map('<leader>co', tb.lsp_outgoing_calls, 'Outgoing calls (what this calls)')
+    map('<leader>ce', vim.diagnostic.open_float, 'Show diagnostic')
+    map('<leader>ch', function() vim.cmd('LspClangdSwitchSourceHeader') end, 'Switch source/header')
+  end,
+})
 
-" Plugin to view the values of the registers
-Plug 'junegunn/vim-peekaboo'
+-- Claude Code (coder/claudecode.nvim) -- shares the <leader>c "code" prefix above.
+-- 'cs' is reused for visual mode only (send selection); normal-mode 'cs' stays
+-- document symbols since Vim keeps mode keymaps separate.
+require('claudecode').setup()
 
-" Vim/tmux integration
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'christoomey/vim-tmux-runner'
-Plug 'keith/tmux.vim'
+vim.keymap.set('n', '<leader>cc', '<cmd>ClaudeCode<cr>', { silent = true, desc = 'Claude: toggle' })
+vim.keymap.set('n', '<leader>cu', '<cmd>ClaudeCode --resume<cr>', { silent = true, desc = 'Claude: resume session (picker)' })
+vim.keymap.set('n', '<leader>ct', '<cmd>ClaudeCode --continue<cr>', { silent = true, desc = 'Claude: continue last session' })
+vim.keymap.set('n', '<leader>cf', '<cmd>ClaudeCodeFocus<cr>', { silent = true, desc = 'Claude: focus' })
+vim.keymap.set('n', '<leader>ca', '<cmd>ClaudeCodeAdd %<cr>', { silent = true, desc = 'Claude: add current file' })
+vim.keymap.set('n', '<leader>cy', '<cmd>ClaudeCodeDiffAccept<cr>', { silent = true, desc = 'Claude: accept diff' })
+vim.keymap.set('n', '<leader>cn', '<cmd>ClaudeCodeDiffDeny<cr>', { silent = true, desc = 'Claude: reject diff' })
+vim.keymap.set('v', '<leader>cs', '<cmd>ClaudeCodeSend<cr>', { silent = true, desc = 'Claude: send selection' })
 
-" Plugins to allow snippets
-" Plugin 'MarcWeber/vim-addon-mw-utils'
-" Plugin 'tomtom/tlib_vim'
-" Plugin 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
-Plug 'SirVer/ultisnips'
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-Plug 'ncm2/ncm2-ultisnips'
+-- C is not prose: the global 'spell' turns every identifier into a typo.
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp', 'rust' },
+  callback = function() vim.opt_local.spell = false end,
+})
 
-" enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
+require('telescope').setup({
+  defaults = {
+    layout_strategy = 'horizontal',
+    file_ignore_patterns = { 'node_modules', '.git/' },
+  },
+})
 
-" IMPORTANT: :help Ncm2PopupOpen for more information
-set completeopt=noinsert,menuone,noselect
+local cmp = require('cmp')
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then cmp.select_next_item() else fallback() end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then cmp.select_prev_item() else fallback() end
+    end, { 'i', 's' }),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }),
+    ['<C-Space>'] = cmp.mapping.complete(),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+  }, {
+    { name = 'buffer' },
+    { name = 'path' },
+  }),
+})
+EOF
 
-" NOTE: you need to install completion sources to get completions. Check
-" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
-
-
-" Plugins for changing the themes
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
-Plug 'edkolev/tmuxline.vim'
-Plug 'reedes/vim-thematic'
-Plug 'flazz/vim-colorschemes'
-Plug 'morhetz/gruvbox'
-Plug 'jacoborus/tender.vim'
-Plug 'daylerees/colour-schemes'
-
-Plug 'yuttie/comfortable-motion.vim'
-
-" Ctags plugin to show all tags in a file
-Plug 'majutsushi/tagbar'
-
-Plug 'Yggdroot/indentLine'
-
-" ========================================================================================
-" Language specific plugins
-
-" Ruby / Rails specific plugins
-Plug 'thoughtbot/vim-rspec', { 'for': 'ruby' }
-Plug 'tpope/vim-rails', { 'for': 'ruby' }
-Plug 'tpope/vim-bundler', { 'for': 'ruby' }
-Plug 'slim-template/vim-slim'
-Plug 'kchmck/vim-coffee-script'
-
-" Javascript related Plugins
-Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plug 'othree/yajs.vim', { 'for': 'javascript' }
-Plug 'isRuslan/vim-es6', { 'for': 'javascript' }
-Plug 'mustache/vim-mustache-handlebars', { 'for': 'javascript' }
-" Plug 'kchmck/vim-coffee-script', { 'for': 'javascript' }
-Plug 'moll/vim-node', { 'for': 'javascript' }
-Plug 'MaxMEllon/vim-jsx-pretty', { 'for': 'javascript' }
-
-Plug 'justinj/vim-react-snippets', { 'for': 'javascript' }
-Plug 'nikvdp/ejs-syntax', { 'for': 'javascript' }
-Plug 'prettier/vim-prettier', { 'for': 'javascript' }
-Plug 'tellijo/vim-react-native-snippets', { 'for': 'javascript' }
-Plug 'grvcoelho/vim-javascript-snippets', { 'for': 'javascript' }
-Plug 'leafgarland/typescript-vim'
-
-Plug 'lumiliet/vim-twig'
-
-Plug 'mattn/emmet-vim'
-
-" Markdown specific plugins
-Plug 'godlygeek/tabular', { 'for': 'markdown' }
-Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-
-" CSS specific Plugins
-Plug 'ap/vim-css-color'
-
-" Docker specific Plugins
-Plug 'ekalinin/Dockerfile.vim'
-
-" Python specific plugins
-Plug 'klen/python-mode', { 'for': 'python' }
-
-" Templating specific plugins
-Plug 'tpope/vim-haml'
-Plug 'digitaltoad/vim-pug'
-
-" Elixir specific plugins
-Plug 'elixir-lang/vim-elixir'
-
-" Solidity / Ethereum specific plugins
-Plug 'tomlion/vim-solidity'
-
-" C Specific Plugins
-Plug 'justinmk/vim-syntax-extra'
-
-" Kotlin Specific Plugins
-Plug 'udalov/kotlin-vim'
-
-" Writing specific plugins
-Plug 'reedes/vim-pencil'
-Plug 'reedes/vim-lexical'
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/limelight.vim'
-
-" Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-
-" Plug 'w0rp/ale'
-" Plug 'skywind3000/asyncrun.vim'
-
-" Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-
-call plug#end()
+lua require('csvview').setup()
 
 filetype plugin indent on
 
-filetype indent on
-
 autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
-" Leader
-let mapleader = " "
 
+set foldlevel=99
 set foldmethod=indent
 set backspace=2   " Backspace deletes like most programs in insert mode
 set nobackup
@@ -237,8 +296,7 @@ set incsearch     " do incremental searching
 set laststatus=2  " Always display the status line
 set autowrite     " Automatically :write before running commands
 set relativenumber
-set background=light
-" set background=dark
+set background=dark
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -246,7 +304,6 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
   syntax on
 endif
 
-" \ 'background': 'dark',
 let g:thematic#theme_name = 'gruvbox'
 let g:thematic#defaults = {
 \ 'airline-theme': 'serene',
@@ -294,6 +351,7 @@ set tabstop=2
 set shiftwidth=2
 set shiftround
 set expandtab
+set autoindent
 
 " Display extra whitespace
 set list listchars=tab:»·,trail:·,nbsp:·
@@ -319,7 +377,6 @@ if has("unix")
 endif
 
 " Limelight specific configurations
-let g:limelight_conceal_ctermfg = 'gray'
 let g:limelight_conceal_ctermfg = 240
 " let g:limelight_default_coefficient = 0.7
 
@@ -345,6 +402,29 @@ syntax enable
 
 " automatically rebalance windows on vim resize
 autocmd VimResized * :wincmd =
+
+lua << EOF
+local last_bg = nil
+local function sync_macos_appearance()
+  if vim.fn.has('macunix') ~= 1 then return end
+  local appearance = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' }):gsub("%s+", "")
+  local bg = appearance == "Dark" and "dark" or "light"
+  if bg == last_bg then return end
+  last_bg = bg
+  vim.o.background = bg
+  vim.cmd.colorscheme("gruvbox")
+  local sync_theme = vim.fn.expand('~/.dotfiles/bin/sync-theme')
+  if vim.fn.executable(sync_theme) == 1 then
+    vim.fn.jobstart({ sync_theme })
+  end
+end
+
+sync_macos_appearance()
+
+vim.api.nvim_create_autocmd("FocusGained", {
+  callback = sync_macos_appearance,
+})
+EOF
 
 " zoom a vim pane, <C-w>= to re-balance
 nnoremap <leader>- :wincmd _<cr>:wincmd \|<cr>
@@ -378,23 +458,9 @@ nnoremap <Leader>0 :Goyo<CR>
 nnoremap <Leader>9 :Limelight!!<CR>
 let g:goyo_width = 90
 
-" ctrlp vim
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlP'
-
-
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
 if executable('ag')
-  " Use Ag over Grep
   set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag -Q -l --nocolor --hidden -g "" %s'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-
-
   if !exists(":Ag")
     command -nargs=+ -complete=file -bar Ag silent! grep! <args>|cwindow|redraw!
     nnoremap \ :Ag<SPACE>
@@ -457,7 +523,7 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-let g:airline_theme = 'tender'
+let g:airline_theme = 'gruvbox'
 let g:airline_powerline_fonts = 1
 " let g:airline_left_sep = '»'
 " let g:airline_left_sep = '▶'
@@ -480,25 +546,10 @@ let g:airline_powerline_fonts = 1
 " let g:airline_symbols.notexists = '∄'
 " let g:airline_symbols.whitespace = 'Ξ'
 
-" Manage tmux line so that the windows dont overflow to each other
-let g:tmuxline_powerline_separators = 1
-" let g:tmuxline_separators = {
-"     \ 'left' : '▶',
-"     \ 'left_alt': '>',
-"     \ 'right' : '◀',
-"     \ 'right_alt' : '<',
-"     \ 'space' : ' '}
-
-let g:tmuxline_preset = {
-      \'a'    : '#S',
-      \'b'    : ['#(tmux-spotify-info)'],
-      \'win'  : '#I #W',
-      \'cwin' : '#I #W',
-      \'x'    : '%a %b %d',
-      \'y'    : '%I:%M %p',
-      \'z'    : '#(~/bin/battery Discharging) - #h'}
 
 " Relative / Absolute line numbers toggle
+nnoremap <Leader>bg :lua vim.o.background = vim.o.background == "dark" and "light" or "dark"; vim.cmd.colorscheme("gruvbox")<CR>
+
 function! NumberToggle()
   if(&relativenumber == 1)
     set number
@@ -508,20 +559,13 @@ function! NumberToggle()
 endfunc
 nnoremap <C-i> :call NumberToggle()<cr>
 
-" Indent settings
-set ts=2 sw=2 et
-let g:indent_guides_start_level = 2
-let g:indent_guides_guide_size = 1
-let g:indent_guides_auto_colors = 0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  guibg=white   ctermbg=white
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven guibg=lightgrey ctermbg=lightgrey
 
 " Vim pencil specifc plugins
 augroup pencil
   autocmd!
-  autocmd FileType markdown call pencil#init({'wrap': 'hard', 'autoformat': 0})
+  autocmd FileType markdown call pencil#init({'wrap': 'soft', 'autoformat': 0})
         \ | call lexical#init()
-  autocmd FileType text     call pencil#init({'wrap': 'hard', 'autoformat': 0})
+  autocmd FileType text     call pencil#init({'wrap': 'soft', 'autoformat': 0})
         \ | call lexical#init()
 augroup END
 
@@ -530,51 +574,8 @@ nnoremap <silent> Q gqip
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-let g:ycm_key_list_select_completion=[]
-let g:ycm_key_list_previous_completion=[]
 
-" Uses the prettier js library to format js and jsx files
-autocmd FileType javascript.jsx,javascript setlocal formatprg=prettier\ --stdin
-
-
-" Use deoplete.
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#option('ignore_sources', {'_': ['around', 'buffer']})
-
-function g:Multiple_cursors_before()
-  call deoplete#custom#buffer_option('auto_complete', v:false)
-endfunction
-function g:Multiple_cursors_after()
-  call deoplete#custom#buffer_option('auto_complete', v:true)
-endfunction
-
-" Trigger configuration. Do not use <tab> if you use
-" https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger='<leader>e'
-" " shortcut to go to next position
-let g:UltiSnipsJumpForwardTrigger='<c-j>'
-" " shortcut to go to previous position
-let g:UltiSnipsJumpBackwardTrigger='<c-k>'
-
-
-augroup ncm2
-  au!
-  autocmd BufEnter * call ncm2#enable_for_buffer()
-  set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupOpen set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupClose set completeopt=menuone
-augroup END
-
-" Cycle through completion entries with tab/shift+tab
-inoremap <expr> <tab> pumvisible() ? "\<c-n>" : "\<tab>"
-inoremap <expr> <s-tab> pumvisible() ? "\<c-p>" : "\<tab>"
-
-" Parameter expansion for selected entry via Enter
-inoremap <silent> <expr> <CR> (pumvisible() ? ncm2_ultisnips#expand_or("\<CR>", 'n') : "\<CR>")
-
-" Optionally
-let ncm2#complete_length = [[1, 2]]
-let g:ncm2#matcher = 'substrfuzzy'
+set completeopt=menu,menuone,noselect
 
 
 
@@ -598,78 +599,22 @@ let g:user_emmet_settings = {
       \}
 
 
-let g:ale_sign_error = '●'
-let g:ale_sign_warning = '.'
-let g:ale_lint_on_enter = 0
-
-let b:ale_fixers = {'javascript': ['prettier', 'eslint']}
-" let b:ale_fixers = {'ruby': ['rubocop', 'brakeman', 'solargraph']}
-
-autocmd BufWritePost *.js AsyncRun -post=checktime ./node_modules/.bin/eslint --fix %
 
 " Exit terminal mode
 tnoremap <Esc> <C-\><C-n>
 tnoremap jk <C-\><C-n>
 
-" === Denite shorcuts === "
-"   ;         - Browser currently open buffers
-"   <leader>t - Browse list of files in current directory
-"   <leader>g - Search current directory for occurences of given term and
-"   close window if no results
-"   <leader>j - Search current directory for occurences of word under cursor
-nmap ; :Denite buffer -split=floating -winrow=1<CR>
-nmap <leader>r :Denite file/rec -split=floating -winrow=1<CR>
-nnoremap <leader>g :<C-u>Denite grep:. -no-empty -mode=normal<CR>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:. -split=floating -winrow=1<CR>
+" === Telescope shortcuts === "
+"   ;         - Browse open buffers
+"   <leader>r - Browse files in current directory
+"   <leader>g - Search for string in current directory
+"   <leader>j - Search for word under cursor
+nmap ; :Telescope buffers<CR>
+nmap <leader>ff :Telescope find_files<CR>
+nnoremap <leader>g :Telescope live_grep<CR>
+nnoremap <leader>j :Telescope grep_string<CR>
 
-" Custom options for Denite
-"   auto_resize             - Auto resize the Denite window height automatically.
-"   prompt                  - Customize denite prompt
-"   direction               - Specify Denite window direction as directly below current pane
-"   winminheight            - Specify min height for Denite window
-"   highlight_mode_insert   - Specify h1-CursorLine in insert mode
-"   prompt_highlight        - Specify color of prompt
-"   highlight_matched_char  - Matched characters highlight
-"   highlight_matched_range - matched range highlight
-let s:denite_options = {'default' : {
-      \ 'auto_resize': 1,
-      \ 'prompt': 'λ:',
-      \ 'direction': 'dynamictop',
-      \ 'winminheight': '10',
-      \ 'highlight_mode_insert': 'Visual',
-      \ 'highlight_mode_normal': 'Visual',
-      \ 'prompt_highlight': 'Function',
-      \ 'highlight_matched_char': 'Function',
-      \ 'highlight_matched_range': 'Normal'
-      \ }}
-
-
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-  \ denite#do_map('toggle_select').'j'
-endfunction
-
-" === coc.nvim === "
-nmap <silent> <leader>dd <Plug>(coc-definition)
-nmap <silent> <leader>dr <Plug>(coc-references)
-nmap <silent> <leader>dj <Plug>(coc-implementation)
 
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0
-
-" let g:python3_host_prog = $GLOBALINSTALLDIR . "/apps/nvim-py3/bin/python3"
-let g:python3_host_prog = $GLOBALINSTALLDIR . "/opt/anaconda3/bin/python3"
-let g:pymode_doc_bind = 'L'
-
-set autoindent expandtab tabstop=2 shiftwidth=2
+set conceallevel=0

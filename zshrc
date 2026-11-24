@@ -1,18 +1,14 @@
 # skip_global_compinit=1
-# Path to your oh-my-zsh installation.
-export ZSH=/Users/raysapida/.oh-my-zsh
+ANTIGEN_AUTO_UPDATE=false
 
-source ~raysapida/antigen.zsh
+# Parent shells can export the root of a different Spaceship installation.
+# Let this theme locate its own files; keep its readonly root when reloading.
+if [[ "${(t)SPACESHIP_ROOT}" != *readonly* ]]; then
+  unset SPACESHIP_ROOT
+fi
 
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# honukai
-# ZSH_THEME="miloshadzic"
-# ZSH_THEME="muse"
-# ZSH_THEME="agnoster"
-ZSH_THEME="spaceship"
+# Add bin files in dotfiles in path
+export PATH="$HOME/.dotfiles/bin:$PATH"
 
 
 # Uncomment the following line to use case-sensitive completion.
@@ -53,19 +49,13 @@ ZSH_THEME="spaceship"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# plugins=(git npm docker rails brew)
-plugins=(git rails yarn docker)
 
 # User configuration
 
 # export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 # export MANPATH="/usr/local/man:$MANPATH"
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -114,11 +104,11 @@ source $ZSH/oh-my-zsh.sh
 
 
 ## Copied from .bash_profile
-export EDITOR="vim"
+export EDITOR="nvim"
 export USE_EDITOR=$EDITOR
 export VISUAL=$EDITOR
 export PATH=$HOME/bin:$PATH
-eval "$(rbenv init -)"
+# command -v rbenv &>/dev/null && eval "$(rbenv init -)"  # replaced by mise
 
 # some more ls aliases
 # alias ll='ls -alF'
@@ -129,14 +119,17 @@ eval "$(rbenv init -)"
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-alias b='bundle'
 alias be='bundle exec'
 alias tag='ctags -R -f ./.git/tags .'
 
+alias vim='nvim'
 
 alias ev='nvim ~/.vimrc'
 alias et='nvim ~/.tmux.conf'
 alias ez='nvim ~/.zshrc'
+alias en='nvim ~/.config/nvim/init.lua'
+alias el='nvim ~/.config/nvim/init.lua'
+alias es='nvim ~/.ssh/config'
 
 alias zshreload="source ~/.zshrc"
 
@@ -145,16 +138,50 @@ alias ccat='pygmentize -O bg=dark,style=colorful'
 setopt inc_append_history
 setopt share_history
 
-# antigen bundle zsh-users/zsh-syntax-highlighting
-# antigen bundle robbyrussell/oh-my-zsh
-antigen bundle lukechilds/zsh-nvm
+# Preferences reload independently of plugin registration.
+SPACESHIP_PROMPT_ORDER=(
+  dir
+  git
+  ruby
+  node
+  exec_time
+  line_sep
+  char
+)
+[ -r "$HOME/.spaceshiprc.zsh" ] && source "$HOME/.spaceshiprc.zsh"
 
-antigen apply
+# Initialize once per shell. Antigen v2 clears theme hooks before rejecting a
+# duplicate theme registration, so replaying these commands breaks the prompt.
+# Open a new shell after changing the plugin list.
+if (( ! $+functions[antigen] )) && [ -r "$HOME/antigen.zsh" ]; then
+  source "$HOME/antigen.zsh"
+  antigen use oh-my-zsh
 
-export PATH="/usr/local/opt/curl/bin:$PATH"
+  antigen bundle git
+  antigen bundle command-not-found
+  antigen bundle docker
 
-export VIRTUALENV_PYTHON=/usr/local/bin/python3
-export VIRTUALENVWRAPPER_PYTHON=$VIRTUALENV_PYTHON
+  # Load bundles from external repos
+  antigen bundle zsh-users/zsh-completions
+  antigen bundle zsh-users/zsh-autosuggestions
+  antigen bundle zsh-users/zsh-syntax-highlighting
+
+  # Explicit filename also works with the older Antigen installed on this Mac.
+  antigen theme spaceship-prompt/spaceship-prompt --loc=spaceship.zsh-theme
+
+  antigen apply
+fi
+
+if [ -d /opt/homebrew/opt/curl/bin ]; then
+  export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+elif [ -d /usr/local/opt/curl/bin ]; then
+  export PATH="/usr/local/opt/curl/bin:$PATH"
+fi
+
+if (( $+commands[python3] )); then
+  export VIRTUALENV_PYTHON="$(command -v python3)"
+  export VIRTUALENVWRAPPER_PYTHON="$VIRTUALENV_PYTHON"
+fi
 
 export PATH="$HOME/.yarn/bin:$PATH"
 
@@ -169,33 +196,168 @@ alias git10='git log --pretty=format: --name-only | sort | uniq -c | sort -rg | 
 
 # tabtab source for serverless package
 # uninstall by removing these lines or running `tabtab uninstall serverless`
-[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh
+[[ -f "$HOME/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh" ]] && . "$HOME/.config/yarn/global/node_modules/tabtab/.completions/serverless.zsh"
 # tabtab source for sls package
 # uninstall by removing these lines or running `tabtab uninstall sls`
-[[ -f /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh ]] && . /Users/raysapida/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh
+[[ -f "$HOME/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh" ]] && . "$HOME/.config/yarn/global/node_modules/tabtab/.completions/sls.zsh"
 
 alias rn-x='react-native run-ios --simulator="iPhone X"'
 
-export PATH=$PATH:/Users/raysapida/platform-tools/bin
+export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH=$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 alias lint='./node_modules/.bin/eslint --fix'
 
 alias b='buku --suggest'
-
-export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
-export ANDROID_HOME="/usr/local/share/android-sdk"
 
 alias clean-branches='git branch --merged master | grep -v "\* master" | xargs -n 1 git branch -d'
 
 alias usb-info='system_profiler SPUSBDataType'
 alias run-local='./scripts/run_local.sh'
 
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+# plugins=(git npm docker rails brew)
+plugins=(git rails yarn docker)
+
+if (( $+commands[python3] )); then
+  export CLOUDSDK_PYTHON="$(command -v python3)"
+fi
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/raysapida/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/work/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/work/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/raysapida/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/raysapida/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/work/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/work/google-cloud-sdk/completion.zsh.inc"; fi
 
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+# __conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# if [ $? -eq 0 ]; then
+#     eval "$__conda_setup"
+# else
+#     if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+#         . "/opt/miniconda3/etc/profile.d/conda.sh"
+#     else
+#         export PATH="/opt/miniconda3/bin:$PATH"
+#     fi
+# fi
+# unset __conda_setup
+# <<< conda initialize <<<
+
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+alias rl='./scripts/run_local.sh'
+alias rt='./scripts/run_tests.sh'
+alias rterm='./scripts/run_terminal.sh'
+
+# export DOCKER_BUILDKIT=0
+# export COMPOSE_DOCKER_CLI_BUILD=0
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+# [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+if (( $+commands[terraform] )); then
+  autoload -U +X bashcompinit && bashcompinit
+  complete -o nospace -C "$(command -v terraform)" terraform
+fi
+
+# nvm use default
+# export NVM_LAZY_LOAD=true
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+# [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+# replaced by mise — nvm lazy-load removed
+# export NVM_DIR="$HOME/.nvm"
+# nvm() { unfunction nvm; _load_nvm; nvm "$@"; }
+# _load_nvm() {
+#   [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+#   [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+# }
+# node() { unfunction node; _load_nvm; node "$@"; }
+# npm() { unfunction npm; _load_nvm; npm "$@"; }
+
+export PATH=$PATH:/usr/local/go/bin
+
+# export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+# fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
+# autoload -Uz compinit && compinit
+# . "$HOME/.asdf/asdf.sh"
+# source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
+# export PLATFORMIO_PYTHON_EXE="$(asdf where python)/bin/python"
+
+# Secrets (KB_DATABASE_URL, GOOGLE_API_KEY, GOOGLE_TTS_KEY,
+# REPLICATE_API_TOKEN, CONTEXT7_API_KEY, TYPESAFE_API_KEY) live in
+# ~/.zshrc.local — see the end of this file.
+
+if [ -x /usr/libexec/java_home ]; then
+  java17_home=$(/usr/libexec/java_home -v 17 2>/dev/null)
+  if [ -n "$java17_home" ]; then
+    export JAVA_HOME="$java17_home"
+  fi
+  unset java17_home
+fi
+if [ -d /opt/homebrew/opt/openjdk@17/bin ]; then
+  export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+fi
+export IDF_PATH="$HOME/esp/esp-idf"
+
+alias get_idf='. $HOME/esp/esp-idf/export.sh'
+
+r(){ rtfm; cd "$(cat ~/.rtfm_last_dir)"; } # rtfm launcher
+export PATH="$HOME/.local/bin:$PATH"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+alias oc='ollama launch opencode'
+
+# opencode: stop reading ~/.claude/CLAUDE.md and ~/.claude/skills/ as fallbacks.
+# Global rules now live at ~/.config/opencode/AGENTS.md; skills at ~/.agents/skills/.
+export OPENCODE_DISABLE_CLAUDE_CODE=1
+
+[ -r "$HOME/.elan/env" ] && source "$HOME/.elan/env"
+
+# Activate after other runtimes have extended PATH. Installing tools belongs in
+# mac_setup.sh, never in shell startup.
+if (( $+commands[mise] )); then
+  eval "$(mise activate zsh)"
+fi
+
+# ub — Unison batch sync for the current workspace.
+# Walks up from $PWD looking for a directory whose name matches a profile in
+# ~/.unison (e.g. inside ~/work/example-project/pipeline it finds ~/.unison/example-project.prf and
+# runs `unison lemur -batch`). Extra args are passed through to unison.
+ub() {
+  local dir=$PWD profile
+  while [[ -n $dir && $dir != / ]]; do
+    profile=${dir:t}
+    if [[ -f $HOME/.unison/$profile.prf ]]; then
+      print -P "%F{cyan}→ unison $profile -batch $*%f"
+      unison "$profile" -batch "$@"
+      return $?
+    fi
+    dir=${dir:h}
+  done
+  print -u2 "ub: no Unison profile for $PWD (looked for ~/.unison/<dir>.prf up the tree)"
+  return 1
+}
+
+# Machine-local paths, secrets and overrides stay outside the repository.
+# Keep this last so shared defaults never overwrite local choices.
+if [ -r "$HOME/.zshrc.local" ]; then
+  source "$HOME/.zshrc.local"
+fi
 
 # https://github.com/rails/docked
 # docker volume create ruby-bundle-cache

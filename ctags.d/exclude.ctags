@@ -1,0 +1,9 @@
+# Universal Ctags reads every *.ctags file in ~/.ctags.d (symlinked by rcm).
+# Keep dependency/build dirs out of tag files — they bloated some to >1GB.
+--exclude=.git
+--exclude=node_modules
+--exclude=.venv*
+--exclude=venv
+--exclude=Pods
+--exclude=build
+--exclude=graphify-out

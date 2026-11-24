@@ -1,0 +1,203 @@
+#!/usr/bin/env bash
+#
+# Pull the latest commits for every git repo under a directory.
+#
+# Scans the given directory (default: the current directory) for git repos and
+# updates each one. Directories that are not repos are ignored, not errors.
+#
+# Repos often sit on differently-named primary branches (develop / main / master
+# / production / ...), so this pulls whatever branch each repo currently has
+# checked out and flags anything outside the usual set.
+#
+# Fast-forward only: it will never create a merge commit, and it never touches a
+# repo it cannot cleanly update. Local commits and uncommitted work are safe.
+#
+# Usage:
+#   pull-all                    # scan the current directory
+#   pull-all ~/work/example-project    # scan somewhere else
+#   pull-all --dry-run          # fetch only; report what WOULD be pulled
+#   pull-all --depth 4          # how deep to look for repos (default 3)
+#   pull-all --help
+
+set -uo pipefail
+
+PRIMARY_BRANCHES="develop main master production"
+
+ROOT=""
+DRY_RUN=0
+DEPTH=3
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -n|--dry-run) DRY_RUN=1 ;;
+    -d|--depth)
+      shift
+      case "${1:-}" in
+        ''|*[!0-9]*) echo "--depth needs a number" >&2; exit 2 ;;
+      esac
+      DEPTH="$1"
+      ;;
+    -h|--help)
+      sed -n '3,20p' "${BASH_SOURCE[0]}" | sed 's/^#\{1\} \{0,1\}//'
+      exit 0
+      ;;
+    -*) echo "Unknown option: $1 (try --help)" >&2; exit 2 ;;
+    *)
+      [ -n "$ROOT" ] && { echo "Only one directory may be given" >&2; exit 2; }
+      ROOT="$1"
+      ;;
+  esac
+  shift
+done
+
+ROOT="$(cd "${ROOT:-$PWD}" 2>/dev/null && pwd)" || {
+  echo "No such directory" >&2; exit 2
+}
+
+if [ -t 1 ]; then
+  BOLD=$'\033[1m'; RED=$'\033[31m'; GREEN=$'\033[32m'
+  YELLOW=$'\033[33m'; BLUE=$'\033[34m'; DIM=$'\033[2m'; RESET=$'\033[0m'
+else
+  BOLD=""; RED=""; GREEN=""; YELLOW=""; BLUE=""; DIM=""; RESET=""
+fi
+
+updated=0; uptodate=0; failed=0; skipped=0
+notes=""
+
+note() { notes="${notes}  $1"$'\n'; }
+
+status_line() { # <colour> <label> <repo> <detail>
+  printf "%s%-10s%s %-46s %s\n" "$1" "$2" "$RESET" "$3" "$4"
+}
+
+# ---------------------------------------------------------------- discover ---
+# A repo is any directory containing .git — which may be a directory, or a file
+# in the case of worktrees and submodules. Everything else is simply not matched,
+# so plain directories are ignored rather than treated as errors.
+#
+# Default depth 3 finds ROOT/.git, ROOT/repo/.git and ROOT/group/repo/.git —
+# i.e. a workspace layout (example-app/, integrations/foo/).
+repos="$(find "$ROOT" -maxdepth "$DEPTH" -name .git \
+           -not -path '*/node_modules/*' -not -path '*/vendor/*' \
+         -exec dirname {} \; 2>/dev/null | sort)"
+
+if [ -z "$repos" ]; then
+  echo "No git repos found under $ROOT (searched $DEPTH level(s) deep)"
+  exit 0
+fi
+
+repo_count="$(printf '%s\n' "$repos" | wc -l | tr -d ' ')"
+[ "$repo_count" -eq 1 ] && unit="repo" || unit="repos"
+echo "${BOLD}Updating $repo_count $unit in $ROOT${RESET}"
+[ "$DRY_RUN" -eq 1 ] && echo "${DIM}(dry run — fetching only, nothing will be merged)${RESET}"
+echo
+
+# ------------------------------------------------------------------- loop ----
+while IFS= read -r repo; do
+  [ -z "$repo" ] && continue
+  # Path relative to ROOT, or just the folder name when ROOT is itself the repo.
+  if [ "$repo" = "$ROOT" ]; then name="$(basename "$repo")"; else name="${repo#$ROOT/}"; fi
+
+  branch="$(git -C "$repo" branch --show-current 2>/dev/null)"
+  if [ -z "$branch" ]; then
+    status_line "$YELLOW" "SKIP" "$name" "detached HEAD — no branch checked out"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  # The upstream ref and the remote name are looked up separately on purpose.
+  # A repo can use a custom fetch refspec, so the first path segment of the
+  # upstream ref is NOT necessarily a remote name — quickbooks_desktop_integration
+  # fetches origin into refs/remotes/bitbucket/*, making its upstream
+  # 'bitbucket/production' while the remote is still called 'origin'.
+  upstream="$(git -C "$repo" rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"
+  remote="$(git -C "$repo" config --get "branch.${branch}.remote" 2>/dev/null)"
+
+  if [ -z "$remote" ]; then
+    if git -C "$repo" remote | grep -qx origin; then
+      remote="origin"
+    else
+      remote="$(git -C "$repo" remote | head -1)"
+    fi
+  fi
+
+  if [ -z "$remote" ]; then
+    status_line "$YELLOW" "SKIP" "$name" "no remotes configured"
+    skipped=$((skipped + 1))
+    continue
+  fi
+
+  if [ -z "$upstream" ]; then
+    upstream="${remote}/${branch}"
+    note "$name: '$branch' has no upstream configured; assumed $upstream"
+  fi
+
+  case " $PRIMARY_BRANCHES " in
+    *" $branch "*) ;;
+    *) note "$name: on '$branch', which is not one of: $PRIMARY_BRANCHES" ;;
+  esac
+
+  if ! fetch_err="$(git -C "$repo" fetch --prune --quiet "$remote" 2>&1)"; then
+    status_line "$RED" "FAIL" "$name" "fetch failed: $(printf '%s' "$fetch_err" | head -1)"
+    failed=$((failed + 1))
+    continue
+  fi
+
+  if ! git -C "$repo" rev-parse --verify --quiet "$upstream" >/dev/null; then
+    status_line "$RED" "FAIL" "$name" "$upstream does not exist on the remote"
+    failed=$((failed + 1))
+    continue
+  fi
+
+  # left = ahead (local-only commits), right = behind (new upstream commits)
+  counts="$(git -C "$repo" rev-list --left-right --count "HEAD...$upstream" 2>/dev/null)"
+  ahead="$(printf '%s' "$counts" | cut -f1)"
+  behind="$(printf '%s' "$counts" | cut -f2)"
+  : "${ahead:=0}" "${behind:=0}"
+
+  # Uncommitted changes to *tracked* files. Untracked files are ignored: git
+  # only blocks a fast-forward when an incoming commit would clobber them.
+  dirty=""
+  if ! git -C "$repo" diff --quiet 2>/dev/null || \
+     ! git -C "$repo" diff --cached --quiet 2>/dev/null; then
+    dirty=" ${YELLOW}(uncommitted changes)${RESET}"
+  fi
+
+  detail="${DIM}${branch}${RESET}"
+  [ "$ahead" -gt 0 ] && detail="$detail ${YELLOW}${ahead} local commit(s) not pushed${RESET}"
+
+  if [ "$behind" -eq 0 ]; then
+    status_line "$GREEN" "UP-TO-DATE" "$name" "$detail$dirty"
+    uptodate=$((uptodate + 1))
+    continue
+  fi
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    status_line "$BLUE" "WOULD PULL" "$name" "$detail ${BOLD}+${behind} commit(s)${RESET}$dirty"
+    updated=$((updated + 1))
+    continue
+  fi
+
+  if merge_err="$(git -C "$repo" merge --ff-only "$upstream" 2>&1)"; then
+    status_line "$GREEN" "UPDATED" "$name" "$detail ${BOLD}+${behind} commit(s)${RESET}$dirty"
+    updated=$((updated + 1))
+  else
+    status_line "$RED" "FAIL" "$name" "$detail — $(printf '%s' "$merge_err" | head -1)"
+    failed=$((failed + 1))
+  fi
+done <<< "$repos"
+
+# ---------------------------------------------------------------- summary ----
+echo
+if [ -n "$notes" ]; then
+  echo "${BOLD}Notes${RESET}"
+  printf '%s' "$notes"
+  echo
+fi
+
+verb="updated"; [ "$DRY_RUN" -eq 1 ] && verb="to update"
+echo "${BOLD}Summary${RESET}"
+echo "  ${GREEN}${updated}${RESET} $verb, ${GREEN}${uptodate}${RESET} already current, ${YELLOW}${skipped}${RESET} skipped, ${RED}${failed}${RESET} failed"
+
+[ "$failed" -gt 0 ] && exit 1
+exit 0

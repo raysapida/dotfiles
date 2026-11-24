@@ -1,0 +1,53 @@
+#!/bin/bash
+# Link each skill in ~/.dotfiles/skills into the agent skill directories:
+#   ~/.claude/skills  (Claude Code)
+#   ~/.agents/skills  (shared: Codex, opencode and other agents)
+# Existing entries are preserved unless --backup-existing is requested. Safe to rerun.
+
+set -euo pipefail
+
+backup_existing=0
+case "${1:-}" in
+  "") ;;
+  --backup-existing) backup_existing=1; shift ;;
+  --help|-h)
+    echo "Usage: link-skills [--backup-existing]"
+    echo "By default, existing entries are skipped and reported."
+    echo "--backup-existing moves conflicting entries to ~/.local/state/dotfiles/skill-backups/ before linking."
+    exit 0
+    ;;
+  *) echo "Usage: link-skills [--backup-existing]" >&2; exit 2 ;;
+esac
+[ "$#" -eq 0 ] || { echo "Usage: link-skills [--backup-existing]" >&2; exit 2; }
+
+source_dir="$HOME/.dotfiles/skills"
+[ -d "$source_dir" ] || { echo "link-skills: $source_dir not found" >&2; exit 1; }
+backup_dir="$HOME/.local/state/dotfiles/skill-backups/$(date +%Y%m%d-%H%M%S)-$$"
+
+status=0
+for dest in "$HOME/.claude/skills" "$HOME/.agents/skills"; do
+  mkdir -p "$dest"
+  for skill in "$source_dir"/*/; do
+    name=$(basename "$skill")
+    [ -f "$skill/SKILL.md" ] || continue
+    target="../../.dotfiles/skills/$name"
+    link="$dest/$name"
+    if [ -L "$link" ] && [ "$(readlink "$link")" = "$target" ]; then
+      continue
+    elif [ -e "$link" ] || [ -L "$link" ]; then
+      if [ "$backup_existing" -eq 0 ]; then
+        echo "link-skills: skipped $link (exists and is not a link to $target)" >&2
+        status=1
+        continue
+      fi
+      backup="$backup_dir/${dest#"$HOME"/}/$name"
+      mkdir -p -m 700 "$backup_dir"
+      mkdir -p "$(dirname "$backup")"
+      mv "$link" "$backup"
+      echo "backed up $link -> $backup"
+    fi
+    ln -s "$target" "$link"
+    echo "linked $link -> $target"
+  done
+done
+exit "$status"

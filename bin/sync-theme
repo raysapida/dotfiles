@@ -1,0 +1,52 @@
+#!/bin/bash
+# Sync macOS appearance to the current tmux server and an already running iTerm2.
+# Outside tmux, use its default server. Never start a server or a terminal app.
+
+set -euo pipefail
+
+command -v defaults >/dev/null 2>&1 || exit 0
+appearance=$(defaults read -g AppleInterfaceStyle 2>/dev/null || true)
+if [ "$appearance" = Dark ]; then
+  tmux_theme=dark
+  iterm_preset="Gruvbox Dark"
+else
+  tmux_theme=light
+  iterm_preset="Gruvbox Light"
+fi
+
+tmux_cmd=(tmux)
+if [ -n "${TMUX:-}" ]; then
+  tmux_cmd+=(-S "${TMUX%%,*}")
+fi
+if command -v tmux >/dev/null 2>&1 && "${tmux_cmd[@]}" list-sessions >/dev/null 2>&1; then
+  "${tmux_cmd[@]}" set -g @tmux-gruvbox "$tmux_theme"
+  plugin="$HOME/.tmux/plugins/tmux-gruvbox/gruvbox-tpm.tmux"
+  if [ -f "$plugin" ]; then
+    # tmux supplies its socket context to the plugin's own tmux commands.
+    "${tmux_cmd[@]}" run-shell "\"$plugin\""
+    # Gruvbox rebuilds status-right, so expand battery placeholders again.
+    battery="$HOME/.tmux/plugins/tmux-battery/battery.tmux"
+    if [ -f "$battery" ]; then
+      "${tmux_cmd[@]}" run-shell "\"$battery\""
+    fi
+  fi
+fi
+
+if command -v osascript >/dev/null 2>&1 && pgrep -xq iTerm2; then
+  osascript - "$iterm_preset" <<'APPLESCRIPT'
+on run argv
+  set presetName to item 1 of argv
+  if application "iTerm2" is running then
+    tell application "iTerm2"
+      repeat with aWindow in every window
+        repeat with aTab in every tab of aWindow
+          repeat with aSession in every session of aTab
+            tell aSession to set color preset to presetName
+          end repeat
+        end repeat
+      end repeat
+    end tell
+  end if
+end run
+APPLESCRIPT
+fi
