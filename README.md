@@ -75,6 +75,25 @@ Bundler and `rdbg` are available with Ruby 4.0.10. Older runtimes can stay
 installed for projects that pin them. Use a project-local mise configuration
 for a Node 22 override.
 
+### Python tooling
+
+Mise pins the `uv` executable. Homebrew provides `python3` in the shell,
+including for Homebrew tools. Use uv to install the interpreter and manage
+the virtual environment and dependencies for each Python project.
+
+On an existing Mac, activate the shared uv version with `mise install uv`
+and open a new shell. In a Python project, use its existing `.python-version`
+and `uv.lock`. For a new project that needs Python 3.12, for example:
+
+```sh
+uv python install 3.12
+uv python pin 3.12
+uv sync
+uv run python --version
+```
+
+The project commands assume a `pyproject.toml` in the current directory.
+
 ### Shared Git defaults
 
 To opt in, add this include to `~/.gitconfig`. Put any local overrides after
