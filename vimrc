@@ -1,233 +1,19 @@
 set nocompatible
 let &t_Co=256
 
+let mapleader = " "
+let s:nvim_config = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/config/nvim'
 lua << EOF
--- Bootstrap lazy.nvim
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
-    "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
-vim.g.mapleader = " "
-
-require("lazy").setup({
-  -- ======================================================================
-  -- General
-  "mhinz/vim-startify",
-  "tpope/vim-eunuch",
-  "tpope/vim-fugitive",
-  "tpope/vim-repeat",
-  "tpope/vim-surround",
-  "tpope/vim-vinegar",
-  "tpope/vim-commentary",
-  "tpope/vim-obsession",
-  "pbrisbin/vim-mkdir",
-  "wellle/targets.vim",
-  "christoomey/vim-sort-motion",
-  "christoomey/vim-system-copy",
-  "christoomey/vim-tmux-navigator",
-  "christoomey/vim-tmux-runner",
-  "keith/tmux.vim",
-  "rking/ag.vim",
-  "junegunn/vim-easy-align",
-  "junegunn/vim-peekaboo",
-  "yuttie/comfortable-motion.vim",
-  "Townk/vim-autoclose",
-  "easymotion/vim-easymotion",
-  { "mg979/vim-visual-multi", branch = "master" },
-
-  -- Completion
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-    },
-  },
-
-  -- Fuzzy finding
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
-  },
-
-  -- AI
-  { "folke/snacks.nvim", opts = {} },
-  {
-    "coder/claudecode.nvim",
-    dependencies = { "folke/snacks.nvim" },
-    cmd = {
-      "ClaudeCode", "ClaudeCodeFocus", "ClaudeCodeAdd",
-      "ClaudeCodeDiffAccept", "ClaudeCodeDiffDeny",
-    },
-  },
-
-  -- LSP + DAP
-  "neovim/nvim-lspconfig",
-  "mfussenegger/nvim-dap",
-  { "mfussenegger/nvim-dap-python", ft = "python" },
-
-  -- Themes + statusline
-  "vim-airline/vim-airline",
-  "vim-airline/vim-airline-themes",
-  "reedes/vim-thematic",
-  "flazz/vim-colorschemes",
-  "jacoborus/tender.vim",
-  "daylerees/colour-schemes",
-  {
-    "morhetz/gruvbox",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("gruvbox")
-    end,
-  },
-
-  -- Tags
-  { "majutsushi/tagbar", cmd = "TagbarToggle" },
-  {
-    "ludovicchabant/vim-gutentags",
-    init = function()
-      vim.g.gutentags_ctags_executable = "ctags"
-      vim.g.gutentags_project_root = { ".git", "Gemfile", "Rakefile" }
-      vim.g.gutentags_ctags_extra_args = { "--tag-relative=yes", "--fields=+ailmnS" }
-      -- Index only git-tracked files (skips gitignored node_modules, venvs, Pods...).
-      -- Non-git roots (Gemfile/Rakefile only) fall back to ctags -R + ~/.ctags.d excludes.
-      vim.g.gutentags_file_list_command = { markers = { [".git"] = "git ls-files" } }
-    end,
-  },
-
-  -- Writing / focus
-  { "reedes/vim-pencil", ft = { "markdown", "text" } },
-  { "reedes/vim-lexical", ft = { "markdown", "text" } },
-  { "junegunn/goyo.vim", cmd = "Goyo" },
-  { "junegunn/limelight.vim", cmd = "Limelight" },
-
-  -- CSV
-  { "hat0uma/csvview.nvim", ft = "csv" },
-
-  -- ======================================================================
-  -- Language specific
-
-  -- Ruby / Rails
-  { "thoughtbot/vim-rspec", ft = "ruby" },
-  { "tpope/vim-rails", ft = "ruby" },
-  { "slim-template/vim-slim", ft = "slim" },
-  { "kchmck/vim-coffee-script", ft = "coffee" },
-
-  -- JavaScript / TypeScript
-  { "pangloss/vim-javascript", ft = { "javascript", "javascriptreact" } },
-  { "othree/yajs.vim", ft = { "javascript", "javascriptreact" } },
-  { "isRuslan/vim-es6", ft = { "javascript", "javascriptreact" } },
-  { "mustache/vim-mustache-handlebars", ft = { "html", "mustache", "handlebars" } },
-  { "moll/vim-node", ft = { "javascript", "javascriptreact" } },
-  { "MaxMEllon/vim-jsx-pretty", ft = { "javascript", "javascriptreact" } },
-  { "nikvdp/ejs-syntax", ft = "ejs" },
-  { "prettier/vim-prettier", ft = { "javascript", "javascriptreact", "typescript", "typescriptreact", "css", "json" } },
-  { "leafgarland/typescript-vim", ft = { "typescript", "typescriptreact" } },
-
-  -- Templates
-  { "lumiliet/vim-twig", ft = "twig" },
-  { "mattn/emmet-vim", ft = { "html", "css", "javascript", "javascriptreact", "typescriptreact" } },
-  { "tpope/vim-haml", ft = { "haml", "sass" } },
-  { "digitaltoad/vim-pug", ft = "pug" },
-
-  -- CSS
-  { "ap/vim-css-color", ft = { "css", "scss", "sass", "html" } },
-
-  -- Docker
-  { "ekalinin/Dockerfile.vim", ft = "dockerfile" },
-
-  -- Other languages
-  { "elixir-lang/vim-elixir", ft = "elixir" },
-  { "tomlion/vim-solidity", ft = "solidity" },
-  { "justinmk/vim-syntax-extra", ft = { "c", "cpp" } },
-  { "udalov/kotlin-vim", ft = "kotlin" },
-  { "hashivim/vim-terraform", ft = { "terraform", "tf", "hcl" } },
-  { "Julian/lean.nvim", ft = "lean" },
-
-  -- Markdown
-  { "godlygeek/tabular", ft = "markdown" },
-  { "plasticboy/vim-markdown", ft = "markdown" },
-  {
-    "iamcco/markdown-preview.nvim",
-    ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
-  },
-}, {
-  ui = { border = "rounded" },
-})
+local config = vim.fn.eval('s:nvim_config')
+vim.opt.rtp:prepend(config)
+require('dotfiles.plugins')
+-- lazy.nvim resets runtimepath during setup.
+vim.opt.rtp:prepend(config)
 EOF
 
+lua require('dotfiles.lsp')
+
 lua << EOF
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-vim.lsp.config('pyright', { capabilities = capabilities })
-vim.lsp.enable('pyright')
-
-require("dap-python").setup("/opt/homebrew/bin/python3")
-
-vim.lsp.config('ruby_lsp', {
-  -- Start through mise from the project root so ruby-lsp runs under the
-  -- project's .ruby-version, not whatever ruby nvim's PATH had at launch.
-  cmd = function(dispatchers, config)
-    return vim.lsp.rpc.start({ 'mise', 'exec', '--', 'ruby-lsp' }, dispatchers, {
-      cwd = config.root_dir,
-    })
-  end,
-  capabilities = capabilities,
-  init_options = {
-    formatter = 'standard',
-    linters = { 'standard' },
-  },
-})
-vim.lsp.enable('ruby_lsp')
-
--- C / C++ (CRuby, and any project with a compile_commands.json)
-vim.lsp.config('clangd', {
-  capabilities = capabilities,
-  cmd = {
-    'clangd',
-    '--background-index',
-    '--header-insertion=never',
-    '--completion-style=detailed',
-    '--pch-storage=memory',
-    '--limit-results=200',
-    '-j=4',
-  },
-})
-vim.lsp.enable('clangd')
-
--- Navigation mappings, active only in buffers with an LSP attached.
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    local function map(lhs, rhs, desc)
-      vim.keymap.set('n', lhs, rhs, { buffer = args.buf, silent = true, desc = desc })
-    end
-    local tb = require('telescope.builtin')
-
-    map('gd', tb.lsp_definitions, 'Go to definition')
-    map('gD', vim.lsp.buf.declaration, 'Go to declaration')
-
-    -- <leader>c... = "code" (also shared by Claude Code below): everything else is
-    -- taken by easymotion/rspec/telescope.
-    map('<leader>cr', tb.lsp_references, 'References')
-    map('<leader>cs', tb.lsp_document_symbols, 'Document symbols')
-    map('<leader>cS', tb.lsp_dynamic_workspace_symbols, 'Workspace symbols')
-    map('<leader>ci', tb.lsp_incoming_calls, 'Incoming calls (who calls this)')
-    map('<leader>co', tb.lsp_outgoing_calls, 'Outgoing calls (what this calls)')
-    map('<leader>ce', vim.diagnostic.open_float, 'Show diagnostic')
-    map('<leader>ch', function() vim.cmd('LspClangdSwitchSourceHeader') end, 'Switch source/header')
-  end,
-})
-
 -- Claude Code (coder/claudecode.nvim) -- shares the <leader>c "code" prefix above.
 -- 'cs' is reused for visual mode only (send selection); normal-mode 'cs' stays
 -- document symbols since Vim keeps mode keymaps separate.
@@ -280,23 +66,7 @@ lua require('csvview').setup()
 
 filetype plugin indent on
 
-autocmd BufNewFile,BufReadPost *.md set filetype=markdown
-
-
-set foldlevel=99
-set foldmethod=indent
-set backspace=2   " Backspace deletes like most programs in insert mode
-set nobackup
-set nowritebackup
-set noswapfile    " http://robots.thoughtbot.com/post/18739402579/global-gitignore#comment-458413287
-set history=50
-set ruler         " show the cursor position all the time
-set showcmd       " display incomplete commands
-set incsearch     " do incremental searching
-set laststatus=2  " Always display the status line
-set autowrite     " Automatically :write before running commands
-set relativenumber
-set background=dark
+lua require('dotfiles.options')
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -334,48 +104,6 @@ let g:thematic#themes = {
 " highlight NonText guibg=#060606
 " highlight Folded  guibg=#0A0A0A guifg=#9090D0
 
-" Make it obvious where 80 characters is
-set textwidth=90
-set colorcolumn=+1
-
-" Numbers
-set number
-set numberwidth=5
-
-" Open new split panes to right and bottom, which feels more natural
-set splitbelow
-set splitright
-
-" Softtabs, 2 spaces
-set tabstop=2
-set shiftwidth=2
-set shiftround
-set expandtab
-set autoindent
-
-" Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
-
-" Always use vertical diffs
-set diffopt+=vertical
-
-" Shortcut for creating a new tab
-nnoremap <silent> <S-t> :tabnew %<CR>
-
-if $TMUX == ''
-  " set clipboard+=unnamed
-  set clipboard+=unnamedplus
-endif
-
-" OSX specific
-if has("unix")
-  let s:uname = system("uname")
-  if s:uname == "Darwin\n"
-    " set clipboard=unnamed
-    set clipboard=unnamedplus
-  endif
-endif
-
 " Limelight specific configurations
 let g:limelight_conceal_ctermfg = 240
 " let g:limelight_default_coefficient = 0.7
@@ -383,10 +111,6 @@ let g:limelight_conceal_ctermfg = 240
 " Automatically start limelight when using goyo
 autocmd! User GoyoEnter Limelight
 autocmd! User GoyoLeave Limelight!
-
-" tab next and tab previous
-nnoremap <S-j> gT
-nnoremap <S-k> gt
 
 " let g:tmux_navigator_no_mappings = 1
 
@@ -400,31 +124,8 @@ nnoremap <S-k> gt
 
 syntax enable
 
-" automatically rebalance windows on vim resize
-autocmd VimResized * :wincmd =
-
-lua << EOF
-local last_bg = nil
-local function sync_macos_appearance()
-  if vim.fn.has('macunix') ~= 1 then return end
-  local appearance = vim.fn.system({ 'defaults', 'read', '-g', 'AppleInterfaceStyle' }):gsub("%s+", "")
-  local bg = appearance == "Dark" and "dark" or "light"
-  if bg == last_bg then return end
-  last_bg = bg
-  vim.o.background = bg
-  vim.cmd.colorscheme("gruvbox")
-  local sync_theme = vim.fn.expand('~/.dotfiles/bin/sync-theme')
-  if vim.fn.executable(sync_theme) == 1 then
-    vim.fn.jobstart({ sync_theme })
-  end
-end
-
-sync_macos_appearance()
-
-vim.api.nvim_create_autocmd("FocusGained", {
-  callback = sync_macos_appearance,
-})
-EOF
+lua require('dotfiles.autocmds')
+lua require('dotfiles.theme')
 
 " zoom a vim pane, <C-w>= to re-balance
 nnoremap <leader>- :wincmd _<cr>:wincmd \|<cr>
@@ -467,14 +168,6 @@ if executable('ag')
   endif
 endif
 
-" Set a graphical menu for tab completed commands
-set wildmenu
-set wildmode=full
-
-" Spell completion
-set spell
-set complete+=kspell
-
 map <silent> <Leader>rt :!bundle list --paths=true \| xargs ctags --extra=+f --exclude=.git --exclude=log -R *<CR><CR>
 
 " ag.vim configuration to start the search from the project root
@@ -492,11 +185,6 @@ map <leader>d :bd<cr>
 " vim-jsx settings
 let g:jsx_ext_required = 0
 
-" Use jk to esc from insert mode
-ino jk <esc>
-cno jk <c-c>
-vno v <esc>
-
 " <Leader>f{char} to move to {char}
 map  <Leader>f <Plug>(easymotion-bd-f)
 nmap <Leader>f <Plug>(easymotion-overwin-f)
@@ -511,8 +199,6 @@ nmap <Leader>L <Plug>(easymotion-overwin-line)
 " Move to word
 map  <Leader>w <Plug>(easymotion-bd-w)
 nmap <Leader>w <Plug>(easymotion-overwin-w)
-
-autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " repeat last command
 map <leader>r :!!<cr>
@@ -547,19 +233,6 @@ let g:airline_powerline_fonts = 1
 " let g:airline_symbols.whitespace = 'Ξ'
 
 
-" Relative / Absolute line numbers toggle
-nnoremap <Leader>bg :lua vim.o.background = vim.o.background == "dark" and "light" or "dark"; vim.cmd.colorscheme("gruvbox")<CR>
-
-function! NumberToggle()
-  if(&relativenumber == 1)
-    set number
-  else
-    set relativenumber
-  endif
-endfunc
-nnoremap <C-i> :call NumberToggle()<cr>
-
-
 " Vim pencil specifc plugins
 augroup pencil
   autocmd!
@@ -575,21 +248,7 @@ nnoremap <silent> Q gqip
 let g:UltiSnipsEditSplit="vertical"
 
 
-set completeopt=menu,menuone,noselect
-
-
-
-" search first in current directory then file directory for tag file
-set tags=tags,./tags
 nmap <F8> :TagbarToggle<CR>
-
-if (has("termguicolors"))
- set termguicolors
-endif
-
-" Set Podfile and .podspec files as ruby
-autocmd BufNewFile,BufRead Podfile,*.podspec set filetype=ruby
-
 
 let g:user_emmet_leader_key='<C-Z>'
 let g:user_emmet_settings = {
@@ -600,21 +259,7 @@ let g:user_emmet_settings = {
 
 
 
-" Exit terminal mode
-tnoremap <Esc> <C-\><C-n>
-tnoremap jk <C-\><C-n>
-
-" === Telescope shortcuts === "
-"   ;         - Browse open buffers
-"   <leader>r - Browse files in current directory
-"   <leader>g - Search for string in current directory
-"   <leader>j - Search for word under cursor
-nmap ; :Telescope buffers<CR>
-nmap <leader>ff :Telescope find_files<CR>
-nnoremap <leader>g :Telescope live_grep<CR>
-nnoremap <leader>j :Telescope grep_string<CR>
-
+lua require('dotfiles.keymaps')
 
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal_code_blocks = 0
-set conceallevel=0

@@ -39,7 +39,7 @@ nvim --headless "+Lazy! install" +qa
 | File | Symlinked to | Purpose |
 |------|-------------|---------|
 | `vimrc` | `~/.vimrc` | Neovim config using lazy.nvim |
-| `config/nvim/init.lua` | `~/.config/nvim/init.lua` | Sources vimrc and enables TypeScript LSP |
+| `config/nvim/init.lua` | `~/.config/nvim/init.lua` | Sources vimrc, which loads the repository Lua modules |
 | `zshrc` | `~/.zshrc` | Zsh config using antigen for plugin management |
 | `tmux.conf` | `~/.tmux.conf` | Tmux config using tpm for plugins |
 | `eslintrc` | `~/.eslintrc` | ESLint config |
@@ -53,7 +53,7 @@ nvim --headless "+Lazy! install" +qa
 ## Key Configuration Details
 
 ### Neovim (vimrc)
-- Plugin manager: lazy.nvim (Lua plugin specification near the top of vimrc)
+- Lua modules for lazy.nvim, LSP, editor options, keymaps, autocommands and theme sync live in `config/nvim/lua/dotfiles/`.
 - Leader key: `<Space>`
 - Completion: nvim-cmp with LSP, buffer and path sources
 - Insert mode escape: `jk`

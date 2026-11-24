@@ -30,7 +30,7 @@ def main():
         if source and source.is_dir():
             plugins.update({p.name: p.resolve() for p in source.iterdir() if p.is_dir()})
     required = {name.split("/")[-1] for name in re.findall(
-        r'''["']([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)["']''', (repo / "vimrc").read_text())}
+        r'''["']([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)["']''', (repo / "config/nvim/lua/dotfiles/plugins.lua").read_text())}
     missing = sorted((required | {"lazy.nvim"}) - plugins.keys())
     if missing:
         parser.error("Install these plugins in a staging directory first: " + ", ".join(missing))
@@ -89,6 +89,18 @@ local ok, err = xpcall(function()
   assert(vim.lsp.config.ts_ls, 'TypeScript LSP config missing')
   assert(vim.fn.exists(':ClaudeCode') == 2, 'ClaudeCode command missing')
   assert(vim.fn.maparg('<leader>cc', 'n') ~= '', 'ClaudeCode mapping missing')
+  assert(vim.o.number and vim.o.relativenumber, 'line numbers missing')
+  assert(vim.o.expandtab and vim.o.shiftwidth == 2, 'indentation options changed')
+  assert(vim.o.splitbelow and vim.o.splitright, 'split options changed')
+  assert(vim.fn.maparg('jk', 'i') == '<Esc>', 'insert escape mapping changed')
+  assert(vim.fn.maparg(';', 'n') == ':Telescope buffers<CR>', 'Telescope mapping changed')
+  assert(#vim.api.nvim_get_autocmds({ group = 'DotfilesEditor', event = 'VimResized' }) == 1,
+    'resize autocommand missing')
+  -- Verify filetype behavior without starting a real language server.
+  vim.lsp.enable('ruby_lsp', false)
+  vim.cmd.edit('Podfile')
+  assert(vim.bo.filetype == 'ruby', 'Podfile Ruby filetype missing')
+  assert(not vim.bo.formatoptions:match('[cro]'), 'comment continuation was enabled')
   local plugins = require('lazy.core.config').plugins
   for _, name in ipairs({ 'lean.nvim', 'vim-gutentags', 'snacks.nvim', 'claudecode.nvim' }) do
     assert(plugins[name], name .. ' missing from plugin specification')

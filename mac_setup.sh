@@ -71,7 +71,7 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
 fi
 
 # nvim plugins are managed by lazy.nvim, which bootstraps itself on first
-# launch (see the top of vimrc). `install` only fetches what is missing —
+# launch (see config/nvim/lua/dotfiles/plugins.lua). `install` only fetches what is missing —
 # deliberately not `sync`/`update`, which would pull every plugin to latest and
 # can break a working setup. Run :Lazy update by hand when you want that.
 nvim --headless "+Lazy! install" +qa
