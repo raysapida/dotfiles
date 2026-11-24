@@ -1,12 +1,32 @@
--- Bootstrap lazy.nvim
+-- Seed the machine's lockfile once so later plugin updates stay local.
+local lockfile = vim.fn.stdpath("config") .. "/lazy-lock.json"
+if not vim.uv.fs_stat(lockfile) then
+  local seed = assert(vim.api.nvim_get_runtime_file("lazy-lock.json", false)[1],
+    "Dotfiles Neovim lockfile is missing")
+  vim.fn.mkdir(vim.fn.fnamemodify(lockfile, ":h"), "p")
+  local copied, err = vim.uv.fs_copyfile(seed, lockfile, { excl = true })
+  assert(copied or vim.uv.fs_stat(lockfile), err)
+end
+
+-- Bootstrap lazy.nvim at the revision recorded in the lockfile.
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
-    "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
+  local pin = vim.json.decode(table.concat(vim.fn.readfile(lockfile), "\n"))["lazy.nvim"]
+  assert(pin and pin.commit, "Missing lazy.nvim revision in " .. lockfile)
+  local staging = lazypath .. ".bootstrap-" .. vim.uv.os_getpid()
+  local function git(args)
+    local result = vim.system(args, { text = true }):wait()
+    assert(result.code == 0, result.stderr)
+  end
+  local ok, err = pcall(function()
+    git({ "git", "clone", "--filter=blob:none", "--no-checkout",
+      "https://github.com/folke/lazy.nvim.git", staging })
+    git({ "git", "-C", staging, "checkout", "--detach", pin.commit })
+    local moved, rename_error = vim.uv.fs_rename(staging, lazypath)
+    assert(moved or vim.uv.fs_stat(lazypath), rename_error)
+  end)
+  vim.fn.delete(staging, "rf")
+  assert(ok, err)
 end
 vim.opt.rtp:prepend(lazypath)
 

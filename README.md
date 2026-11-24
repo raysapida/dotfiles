@@ -35,6 +35,40 @@ instead of running the full bootstrap.
 For the `raymond` Mac, start with the [destination handoff](docs/other-mac-upgrade.md),
 which separates portable steps from this Mac's local activation records.
 
+## Shared development tools
+
+`Brewfile` lists the shared command-line tools. To install missing tools on an
+existing Mac, run this from the checkout:
+
+```sh
+brew bundle install --file=Brewfile --no-upgrade
+```
+
+Neovim seeds its local `lazy-lock.json` from the repository on first startup
+when the local file is missing. Existing lockfiles are kept. To adopt the
+shared pins on an existing Mac, back up your local lockfile, copy
+`config/nvim/lazy-lock.json` over it, then run `:Lazy restore`. To publish an
+intentional plugin update, test it locally before copying the revised lockfile
+back into the repository.
+
+### Shared Git defaults
+
+To opt in, add this include to `~/.gitconfig`. Put any local overrides after
+it. Manage your work and personal Git identities in local or per-repository
+configuration.
+
+```gitconfig
+[include]
+    path = ~/.dotfiles/config/git/dotfiles.inc
+```
+
+The include sets the default branch for new repositories, prunes stale
+remote-tracking branches on fetch, and points Git at the shared global ignore
+list. If you already set `core.excludesFile`, merge any private patterns into
+your own ignore file and keep that setting after the include to retain it.
+Check the effective paths with
+`git config --show-origin --get core.excludesFile`.
+
 ## Local settings
 
 Personal agent skills live in `skills/`. Each tool's existing skill entry
@@ -71,8 +105,8 @@ RCRC="$HOME/.dotfiles/rcrc" rcup -v -K \
   -x config/mise/config.toml -x default-gems -x antigen.zsh
 ```
 
-The Neovim entry point is `config/nvim/init.lua`; it sources `~/.vimrc` and enables
-TypeScript LSP. tmux uses `C-s` as its prefix; `prefix T` syncs macOS appearance to
+The Neovim entry point is `config/nvim/init.lua`; it sources `~/.vimrc`, which loads the
+shared Lua modules. tmux uses `C-s` as its prefix; `prefix T` syncs macOS appearance to
 the current tmux server and any running iTerm2 sessions. iTerm2 requires the
 `Gruvbox Dark` and `Gruvbox Light` presets. `<Space>bg` changes Neovim's background
 locally until the next macOS appearance change.

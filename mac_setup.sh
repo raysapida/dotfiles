@@ -26,17 +26,11 @@ fi
 eval "$(/opt/homebrew/bin/brew shellenv)"
 
 brew update
-brew install neovim
-brew install tmux
-brew install python
-brew install the_silver_searcher
-brew install urlview      # for tmux-plugins/tmux-urlview
-brew install extract_url  # for tmux-plugins/tmux-urlview
+brew bundle install --file="$dotfiles_dir/Brewfile" --no-upgrade
 
 # ----------------------------------------------------------------------
 # Dotfiles (rcm) — do this before mise so ~/.config/mise/config.toml exists
 # ----------------------------------------------------------------------
-brew install rcm
 # rcrc links the pinned Antigen script to ~/antigen.zsh (no leading dot).
 RCRC="$dotfiles_dir/rcrc" rcup -v -d "$HOME/.dotfiles"
 
@@ -70,8 +64,5 @@ if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
 
-# nvim plugins are managed by lazy.nvim, which bootstraps itself on first
-# launch (see config/nvim/lua/dotfiles/plugins.lua). `install` only fetches what is missing —
-# deliberately not `sync`/`update`, which would pull every plugin to latest and
-# can break a working setup. Run :Lazy update by hand when you want that.
-nvim --headless "+Lazy! install" +qa
+# lazy.nvim installs missing plugins from the shared lockfile on startup.
+nvim --headless +qa

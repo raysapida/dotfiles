@@ -31,7 +31,12 @@ def main():
             plugins.update({p.name: p.resolve() for p in source.iterdir() if p.is_dir()})
     required = {name.split("/")[-1] for name in re.findall(
         r'''["']([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)["']''', (repo / "config/nvim/lua/dotfiles/plugins.lua").read_text())}
-    missing = sorted((required | {"lazy.nvim"}) - plugins.keys())
+    pinned = json.loads((repo / "config/nvim/lazy-lock.json").read_text())
+    expected = required | {"lazy.nvim"}
+    if pinned.keys() != expected:
+        parser.error("Neovim lockfile and plugin specs differ: "
+                     + ", ".join(sorted(pinned.keys() ^ expected)))
+    missing = sorted(expected - plugins.keys())
     if missing:
         parser.error("Install these plugins in a staging directory first: " + ", ".join(missing))
 
@@ -45,7 +50,7 @@ def main():
         (home / ".dotfiles").symlink_to(repo, target_is_directory=True)
         (home / ".vimrc").symlink_to(repo / "vimrc")
         (config / "init.lua").symlink_to(repo / "config/nvim/init.lua")
-        for name in required | {"lazy.nvim"}:
+        for name in expected:
             shutil.copytree(plugins[name], data / name,
                             ignore=shutil.ignore_patterns(".git", ".DS_Store"))
         commands = work / "commands"
@@ -134,6 +139,10 @@ end
                                  "-l", str(check)], cwd=work, env=env,
                                 text=True, capture_output=True, timeout=45)
         print(result.stdout + result.stderr, end="")
+        if result.returncode == 0:
+            local_lockfile = config / "lazy-lock.json"
+            if local_lockfile.is_symlink() or json.loads(local_lockfile.read_text()) != pinned:
+                raise AssertionError("Neovim did not seed an independent copy of the shared lockfile")
         return result.returncode
 
 
