@@ -108,6 +108,8 @@ rehearsals: `--cache-dir /local/backup/cache-v1` and
 `--repos-dir /local/backup/cache-v1/repos`. The live compatibility symlinks are
 not a standalone v1 cache copy. Finish with the interactive checks listed in
 `docs/unification.md` for terminal appearance, tmux, clipboard, Yazi and Neovim.
+If Ghostty prompts about insecure completion directories on startup, follow the
+[Zsh completion troubleshooting steps](desktop/README.md#zsh-completion-warning).
 
 ## Suggested instruction for the next session
 
