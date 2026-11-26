@@ -22,6 +22,9 @@ the other username; derive them from this computer's own installation.
 
 ## Inspect and preserve this computer
 
+Run `bin/dotfiles-doctor` from the checkout for a read-only check of the current
+links, Antigen files, Zsh completion permissions, and Ghostty appearance setting.
+
 1. Inspect the branch, dirty files, existing `~/.dotfiles`, config symlink targets,
    `~/antigen.zsh`, `~/.antigen` layout and cached plugin revisions. Do not assume
    the loader is still 1.2.3 or that this Mac has the same eight checkouts. If it

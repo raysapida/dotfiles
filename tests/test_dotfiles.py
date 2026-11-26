@@ -82,7 +82,7 @@ class DotfilesTests(unittest.TestCase):
             self.run_command([ZSH, "-n", str(self.checkout / "zshrc")])
             self.run_command([ZSH, "-n", str(self.checkout / "antigen.zsh")])
         for name in ["mac_setup.sh", "bin/sync-theme", "bin/install-ruby-lsp", "bin/pull-all",
-                     "bin/link-skills"]:
+                     "bin/link-skills", "bin/dotfiles-doctor"]:
             self.run_command(["/bin/bash", "-n", str(self.checkout / name)])
         for name in ["bin/tat", "bin/tmux-spotify"]:
             self.run_command(["/bin/sh", "-n", str(self.checkout / name)])
@@ -171,6 +171,63 @@ class DotfilesTests(unittest.TestCase):
                     self.assertEqual((home / name).resolve(), self.checkout / source)
                 for name in [".tests", ".docs", ".README.md", ".mac_setup.sh", ".antigen.zsh"]:
                     self.assertFalse((home / name).exists(), name)
+
+    def test_doctor_inspects_local_state_without_running_startup(self):
+        for name, source in [(".rcrc", "rcrc"), (".zshrc", "zshrc"), (".vimrc", "vimrc"),
+                             (".tmux.conf", "tmux.conf"), (".config/nvim/init.lua", "config/nvim/init.lua"),
+                             ("antigen.zsh", "antigen.zsh")]:
+            link = self.home / name
+            link.parent.mkdir(parents=True, exist_ok=True)
+            link.symlink_to(self.home / ".dotfiles" / source)
+        self.write(self.home / ".zshenv", 'touch "$HOME/startup-ran"\n')
+        cache = self.home / "custom antigen"
+        (cache / "bundles").mkdir(parents=True)
+        self.write(cache / "startup.zsh", 'touch "$HOME/startup-ran"\n')
+        self.write(cache / ".zcompdump", 'touch "$HOME/startup-ran"\n')
+        self.stub("defaults", "assert sys.argv[1] == 'read'\n"
+                  "if sys.argv[2] == '-g':\n"
+                  "    print('1')\n"
+                  "elif os.environ.get('GHOSTTY_OVERRIDE') == '1':\n"
+                  "    print('0')\n"
+                  "else:\n"
+                  "    sys.exit(1)\n")
+
+        command = [str(self.checkout / "bin/dotfiles-doctor")]
+        env = dict(self.env, ADOTDIR=str(cache), ANTIGEN_CACHE=str(cache / "startup.zsh"),
+                   GHOSTTY_OVERRIDE="1")
+        healthy = self.run_command(command, env=env, check=False)
+        # A real system audit can flag host-specific paths even with an isolated home.
+        warnings = [line for line in healthy.stdout.splitlines() if line.startswith("WARN")]
+        self.assertTrue(all("Zsh completion audit" in line for line in warnings), healthy.stdout)
+        self.assertEqual(healthy.returncode, int(bool(warnings)), healthy.stdout + healthy.stderr)
+        for message in ["~/.tmux.conf links to ~/.dotfiles/tmux.conf",
+                        "~/antigen.zsh links to the shared loader",
+                        f"Antigen startup cache exists at {cache / 'startup.zsh'}",
+                        "Ghostty appearance preference allows the system appearance"]:
+            self.assertIn("OK   " + message, healthy.stdout)
+
+        tmux_link = self.home / ".tmux.conf"
+        tmux_link.unlink()
+        tmux_link.symlink_to("missing-tmux.conf")
+        local_loader = self.home / "antigen.zsh"
+        local_loader.unlink()
+        self.write(local_loader, 'touch "$HOME/startup-ran"\n')
+        (cache / "bundles").rename(cache / "repos")
+        completions = self.home / "writable completions"
+        self.write(completions / "compaudit", 'touch "$HOME/startup-ran"\n')
+        completions.chmod(0o775)
+        problems = self.run_command(command, check=False,
+                                    env=dict(env, FPATH=str(completions), GHOSTTY_OVERRIDE="0"))
+        self.assertEqual(problems.returncode, 1, problems.stdout + problems.stderr)
+        for message in ["~/.tmux.conf links to missing-tmux.conf", "~/antigen.zsh differs",
+                        "Antigen has a legacy repos directory",
+                        "Ghostty is forced to Light by the global"]:
+            self.assertIn("WARN " + message, problems.stdout)
+        if Path("/bin/zsh").is_file() and sys.platform == "darwin":
+            self.assertIn(str(completions), problems.stdout)
+        self.assertFalse((self.home / "startup-ran").exists())
+        self.assertEqual(tmux_link.readlink(), Path("missing-tmux.conf"))
+        self.assertEqual(completions.stat().st_mode & 0o777, 0o775)
 
     def test_shell_without_optional_dependencies_and_local_overrides(self):
         # Fail loudly if startup ever attempts installations or macOS automation.

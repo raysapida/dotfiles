@@ -1,0 +1,114 @@
+#!/bin/bash
+# Inspect the local dotfiles installation without changing it.
+
+set -euo pipefail
+
+case "$#:${1:-}" in
+  0:) ;;
+  1:--help|1:-h)
+    printf '%s\n' 'Usage: dotfiles-doctor' 'Report local dotfiles setup problems without making changes.'
+    exit 0
+    ;;
+  *) printf 'Usage: dotfiles-doctor\n' >&2; exit 2 ;;
+esac
+
+status=0
+checkout="$HOME/.dotfiles"
+
+ok() { printf 'OK   %s\n' "$1"; }
+info() { printf 'INFO %s\n' "$1"; }
+warn() { printf 'WARN %s\n' "$1"; status=1; }
+
+check_rcm_link() {
+  local name=$1 source=$2 path="$HOME/$1"
+  if [[ -L "$path" && "$path" -ef "$checkout/$source" ]]; then
+    ok "~/$name links to ~/.dotfiles/$source"
+  elif [[ -L "$path" ]]; then
+    warn "~/$name links to $(readlink "$path") (expected ~/.dotfiles/$source)"
+  else
+    warn "~/$name should link to ~/.dotfiles/$source"
+  fi
+}
+
+if [[ -r "$checkout/rcrc" ]]; then
+  ok "~/.dotfiles contains the rcm configuration"
+  check_rcm_link .rcrc rcrc
+  check_rcm_link .zshrc zshrc
+  check_rcm_link .vimrc vimrc
+  check_rcm_link .tmux.conf tmux.conf
+  check_rcm_link .config/nvim/init.lua config/nvim/init.lua
+else
+  warn "~/.dotfiles/rcrc is missing or unreadable; check where ~/.dotfiles points"
+fi
+
+loader="$HOME/antigen.zsh"
+shared_loader="$checkout/antigen.zsh"
+if [[ ! -f "$loader" || ! -r "$loader" ]]; then
+  warn "~/antigen.zsh is missing or unreadable"
+elif [[ ! -r "$shared_loader" ]]; then
+  warn "Cannot compare ~/antigen.zsh with the shared loader"
+elif [[ -L "$loader" && "$loader" -ef "$shared_loader" ]]; then
+  ok "~/antigen.zsh links to the shared loader"
+elif cmp -s "$loader" "$shared_loader"; then
+  ok "~/antigen.zsh matches the shared loader byte for byte"
+else
+  warn "~/antigen.zsh differs from the shared loader; check the existing-machine migration guide"
+fi
+
+antigen_dir=${ADOTDIR:-$HOME/.antigen}
+bundles=${ANTIGEN_BUNDLES:-$antigen_dir/bundles}
+startup_cache=${ANTIGEN_CACHE:-$antigen_dir/init.zsh}
+completion_dump=${ANTIGEN_COMPDUMP:-$antigen_dir/.zcompdump}
+if [[ -d "$bundles" ]]; then
+  ok "Antigen bundles directory exists at $bundles"
+elif [[ -d "$antigen_dir/repos" ]]; then
+  warn "Antigen has a legacy repos directory at $antigen_dir/repos; check the migration guide"
+else
+  info "Antigen bundles directory is missing at $bundles"
+fi
+if [[ "$startup_cache" == false ]]; then
+  info "Antigen startup caching is disabled by ANTIGEN_CACHE"
+elif [[ -f "$startup_cache" && -r "$startup_cache" && -s "$startup_cache" ]]; then
+  ok "Antigen startup cache exists at $startup_cache"
+else
+  info "Antigen startup cache is missing, empty, or unreadable at $startup_cache"
+fi
+if [[ -f "$completion_dump" && -r "$completion_dump" && -s "$completion_dump" ]]; then
+  ok "Antigen completion dump exists at $completion_dump"
+else
+  info "Antigen completion dump is missing, empty, or unreadable at $completion_dump"
+fi
+
+if [[ ! -x /bin/zsh ]]; then
+  info "System Zsh is unavailable; skipping completion audit"
+elif audit=$(env -u FPATH /bin/zsh -dfc '
+  # Load compaudit from the system directory before inspecting any user paths.
+  autoload -Uz +X "/usr/share/zsh/$ZSH_VERSION/functions/compaudit" || exit 2
+  typeset -U fpath
+  [[ -z $1 ]] || fpath+=( "${(@s.:.)1}" )
+  compaudit
+' dotfiles-doctor "${FPATH:-}" 2>&1); then
+  ok "Zsh completion paths passed compaudit"
+else
+  warn "Zsh completion audit reported a problem"
+  printf '%s\n' "$audit"
+fi
+
+if ! command -v defaults >/dev/null 2>&1; then
+  info "macOS defaults is unavailable; skipping Ghostty appearance check"
+else
+  key=NSRequiresAquaSystemAppearance
+  if preference=$(defaults read com.mitchellh.ghostty "$key" 2>/dev/null); then
+    preference_scope=Ghostty
+  else
+    preference=$(defaults read -g "$key" 2>/dev/null || true)
+    preference_scope=global
+  fi
+  case "$preference" in
+    1|yes|YES|true|TRUE) warn "Ghostty is forced to Light by the $preference_scope $key preference" ;;
+    ''|0|no|NO|false|FALSE) ok "Ghostty appearance preference allows the system appearance" ;;
+    *) warn "Ghostty appearance check found an unexpected $preference_scope $key value" ;;
+  esac
+fi
+
+exit "$status"

@@ -170,6 +170,13 @@ after changing the plugin list or the loader.
 
 ## Validation
 
+Run `bin/dotfiles-doctor` to check the core rcm links, Antigen loader and cache,
+Zsh completion permissions, and Ghostty's macOS appearance preference. The
+completion check uses macOS Zsh's default search paths and any exported `FPATH`
+entries without loading your Zsh startup files. The doctor makes no changes and
+exits with status `1` when it reports a warning. A cache that has yet to be
+generated is informational.
+
 ```sh
 python3 -m unittest discover -s tests -v
 python3 tests/smoke_zsh.py
