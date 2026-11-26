@@ -1,0 +1,6 @@
+{
+  "version": "2.2.3",
+  "source": "https://raw.githubusercontent.com/zsh-users/antigen/v2.2.3/bin/antigen.zsh",
+  "release": "https://github.com/zsh-users/antigen/releases/tag/v2.2.3",
+  "sha256": "3d0261e1f00decf59b04555ef5696cb7008b924b92d8d82fd70914121c1eb7ae"
+}

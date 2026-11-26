@@ -1,0 +1,18 @@
+brew "rcm"
+brew "neovim"
+brew "tmux"
+brew "python"
+brew "ripgrep"
+brew "the_silver_searcher"
+brew "fzf"
+brew "jq"
+brew "gh"
+brew "unison"
+brew "urlview"
+brew "extract_url"
+
+# Terminal apps
+brew "btop"
+brew "yazi"
+brew "lazygit"
+brew "lazydocker"

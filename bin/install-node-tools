@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Install the tools that share the default Node runtime's npm prefix.
+set -euo pipefail
+
+mise_bin="${MISE:-$HOME/.local/bin/mise}"
+
+# Keep the TypeScript fallback compiler beside its language server.
+"$mise_bin" -C "$HOME" exec -- npm install --global \
+  typescript@6.0.3 typescript-language-server@6.0.2 corepack@0.35.0
+"$mise_bin" -C "$HOME" exec -- corepack enable

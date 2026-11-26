@@ -1,0 +1,8 @@
+# rcm configuration (symlinked to ~/.rcrc).
+#
+# Without EXCLUDES, rcup symlinks *every* top-level entry in ~/.dotfiles into
+# $HOME with a dot prefix — including docs and the ctags index, which produces
+# junk like ~/.tags, ~/.docs/ and ~/.README.md.
+EXCLUDES="tags *.md docs tests skills mac_setup.sh Brewfile lazy-lock.json"
+# zshrc sources ~/antigen.zsh, not ~/.antigen.zsh.
+UNDOTTED="antigen.zsh"

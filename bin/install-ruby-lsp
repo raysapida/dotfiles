@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# Ensure the ruby-lsp gem is installed in every mise-managed ruby.
+#
+# Usage:
+#   install-ruby-lsp              # every installed ruby version
+#   install-ruby-lsp 3.4.4 4.0.5  # only these versions
+#
+# New rubies get ruby-lsp from ~/.default-gems (ruby.default_packages_file in
+# ~/.config/mise/config.toml); this backfills rubies installed before that.
+
+set -uo pipefail
+
+MISE="${MISE:-$HOME/.local/bin/mise}"
+GEMS=(ruby-lsp)
+
+if [ ! -x "$MISE" ]; then
+  echo "install-ruby-lsp: mise not found at $MISE" >&2
+  exit 1
+fi
+
+versions=("$@")
+if [ ${#versions[@]} -eq 0 ]; then
+  # `mise ls --installed` prints "ruby  3.4.4  ..."; take the version column.
+  while read -r version; do
+    versions+=("$version")
+  done < <("$MISE" ls ruby --installed 2>/dev/null | awk '{print $2}' | sort -u)
+fi
+
+if [ ${#versions[@]} -eq 0 ]; then
+  echo "install-ruby-lsp: no ruby versions installed under mise"
+  exit 0
+fi
+
+status=0
+for version in "${versions[@]}"; do
+  prefix="$($MISE where "ruby@$version" 2>/dev/null)"
+  if [ -z "$prefix" ] || [ ! -x "$prefix/bin/gem" ]; then
+    echo "ruby $version: skipped (no gem binary)" >&2
+    status=1
+    continue
+  fi
+
+  for gem_name in "${GEMS[@]}"; do
+    if "$prefix/bin/gem" list -i "^${gem_name}$" >/dev/null 2>&1; then
+      echo "ruby $version: $gem_name already installed"
+      continue
+    fi
+
+    echo "ruby $version: installing $gem_name..."
+    if "$prefix/bin/gem" install "$gem_name" --no-document; then
+      echo "ruby $version: $gem_name installed"
+    else
+      echo "ruby $version: failed to install $gem_name" >&2
+      status=1
+    fi
+  done
+done
+
+"$MISE" reshim >/dev/null 2>&1 || true
+
+exit $status
